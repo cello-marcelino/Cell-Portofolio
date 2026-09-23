@@ -40,18 +40,18 @@ export default function ImageModal({ isOpen, onClose, images, currentIndex, setC
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200/80 bg-slate-50">
           <div>
-            <h4 className="text-sm font-semibold text-[#0F172A] font-mono flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-teal-500" />
+            <h4 className="text-h3 font-heading font-semibold text-slate-900 flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-teal-700" />
               {currentImg.title}
             </h4>
-            <p className="text-xs text-[#64748B] mt-0.5">{currentImg.caption}</p>
+            <p className="text-tiny font-sans text-slate-500 mt-0.5">{currentImg.caption}</p>
           </div>
           <button
             onClick={onClose}
             aria-label="Close image preview"
-            className="p-2 rounded-lg text-gray-500 hover:text-[#0F172A] hover:bg-gray-200/60 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-700 cursor-pointer"
           >
             <XMarkIcon className="w-5 h-5" />
           </button>
@@ -95,16 +95,16 @@ export default function ImageModal({ isOpen, onClose, images, currentIndex, setC
 
         {/* Thumbnail Pagination Bar */}
         {images.length > 1 && (
-          <div className="flex items-center justify-center gap-2 py-3 px-4 border-t border-gray-200 bg-gray-50 overflow-x-auto">
+          <div className="flex items-center justify-center gap-2 py-3 px-4 border-t border-slate-200/80 bg-slate-50 overflow-x-auto">
             {images.map((img, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
                 aria-label={`View screenshot ${idx + 1}: ${img.title}`}
-                className={`relative w-14 h-9 rounded-md overflow-hidden border transition-all shrink-0 ${
+                className={`relative w-14 h-9 rounded-md overflow-hidden border transition-all shrink-0 cursor-pointer ${
                   idx === currentIndex
-                    ? "border-teal-500 ring-2 ring-teal-500/30 scale-105"
-                    : "border-gray-200 opacity-60 hover:opacity-100"
+                    ? "border-teal-700 ring-2 ring-teal-700/30 scale-105"
+                    : "border-slate-200/80 opacity-60 hover:opacity-100"
                 }`}
               >
                 <Image src={img.src} alt={img.title} fill className="object-cover" />

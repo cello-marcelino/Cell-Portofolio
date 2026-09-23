@@ -1,117 +1,116 @@
-"use client";
-
-import { techPillars } from "@/data/portfolioData";
+import { techEcosystem } from "@/data/portfolioData";
 import {
-  ComputerDesktopIcon,
-  ServerStackIcon,
-  CpuChipIcon,
-  CircleStackIcon,
-  CheckCircleIcon,
   WrenchScrewdriverIcon,
+  CommandLineIcon,
 } from "@heroicons/react/24/outline";
+import {
+  ReactIcon,
+  NextjsIcon,
+  VueIcon,
+  LaravelIcon,
+  FlaskIcon,
+  LivewireIcon,
+  TailwindIcon,
+  PythonIcon,
+  NodejsIcon,
+  MySQLIcon,
+  SQLiteIcon,
+  GitIcon,
+  TensorFlowIcon,
+  ScikitlearnIcon,
+  StreamlitIcon,
+  ChartjsIcon,
+  PytestIcon,
+  PostmanIcon,
+} from "@/components/icons/TechIcons";
+import { BootstrapGitHubIcon } from "@/components/icons/BootstrapIcons";
 
 export default function TechStack() {
-  const getIcon = (id) => {
-    switch (id) {
-      case "frontend":
-        return <ComputerDesktopIcon className="w-6 h-6 text-teal-600" />;
-      case "backend":
-        return <ServerStackIcon className="w-6 h-6 text-purple-600" />;
-      case "ai":
-        return <CpuChipIcon className="w-6 h-6 text-teal-600" />;
-      case "database":
-        return <CircleStackIcon className="w-6 h-6 text-purple-600" />;
+  const getTechIcon = (key) => {
+    switch (key) {
+      case "NextjsIcon":
+        return <NextjsIcon className="w-6 h-6 text-slate-900" />;
+      case "ReactIcon":
+        return <ReactIcon className="w-6 h-6 text-teal-600" />;
+      case "VueIcon":
+        return <VueIcon className="w-6 h-6 text-emerald-600" />;
+      case "LaravelIcon":
+        return <LaravelIcon className="w-6 h-6 text-red-600" />;
+      case "FlaskIcon":
+        return <FlaskIcon className="w-6 h-6 text-slate-800" />;
+      case "LivewireIcon":
+        return <LivewireIcon className="w-6 h-6 text-pink-600" />;
+      case "TailwindIcon":
+        return <TailwindIcon className="w-6 h-6 text-teal-600" />;
+      case "PythonIcon":
+        return <PythonIcon className="w-6 h-6 text-blue-600" />;
+      case "NodejsIcon":
+        return <NodejsIcon className="w-6 h-6 text-emerald-700" />;
+      case "MySQLIcon":
+        return <MySQLIcon className="w-6 h-6 text-teal-700" />;
+      case "SQLiteIcon":
+        return <SQLiteIcon className="w-6 h-6 text-sky-700" />;
+      case "GitIcon":
+        return <GitIcon className="w-6 h-6 text-orange-600" />;
+      case "GitHubIcon":
+        return <BootstrapGitHubIcon className="w-6 h-6 text-slate-900" />;
+      case "TensorFlowIcon":
+        return <TensorFlowIcon className="w-6 h-6 text-amber-600" />;
+      case "ScikitlearnIcon":
+        return <ScikitlearnIcon className="w-6 h-6 text-blue-500" />;
+      case "StreamlitIcon":
+        return <StreamlitIcon className="w-6 h-6 text-red-500" />;
+      case "ChartjsIcon":
+        return <ChartjsIcon className="w-6 h-6 text-pink-500" />;
+      case "PytestIcon":
+        return <PytestIcon className="w-6 h-6 text-teal-700" />;
+      case "PostmanIcon":
+        return <PostmanIcon className="w-6 h-6 text-orange-500" />;
       default:
-        return <ComputerDesktopIcon className="w-6 h-6 text-teal-600" />;
+        return <CommandLineIcon className="w-6 h-6 text-teal-700" />;
     }
   };
 
   return (
     <section id="engineering" className="py-20 md:py-28 relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading */}
-        <div className="max-w-3xl mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-mono mb-3">
-            <WrenchScrewdriverIcon className="w-4 h-4 text-purple-600" />
-            Engineering Overview
+        {/* Section Header */}
+        <div className="max-w-3xl mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/80 text-teal-800 text-tiny font-sans uppercase tracking-wider font-semibold mb-3">
+            <WrenchScrewdriverIcon className="w-3.5 h-3.5 text-teal-700" />
+            Engineering Toolchain
           </div>
-          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-[#0F172A] tracking-tight">
-            Skills & Technologies
+          <h2 className="text-h2 font-heading font-bold text-slate-900 tracking-tight">
+            Frameworks, Libraries & Tools
           </h2>
-          <p className="mt-3 text-base text-[#334155]">
-            Technologies and development practices I have explored through coursework and hands-on projects.
+          <p className="mt-2 text-base text-slate-600 max-w-2xl leading-relaxed font-sans">
+            Core technologies, web frameworks, database engines, and developer platforms used to build full-stack web applications and machine learning experiments.
           </p>
         </div>
 
-        {/* Bento Grid 4 Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {techPillars.map((pillar) => {
-            const isTeal = pillar.accent === "teal";
-            return (
-              <div
-                key={pillar.id}
-                className={`p-6 sm:p-8 rounded-2xl transition-all duration-300 ${
-                  isTeal ? "lightswind-card-teal" : "lightswind-card"
-                }`}
-              >
-                {/* Pillar Header */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`p-2.5 rounded-xl border ${
-                        isTeal
-                          ? "bg-teal-50 border-teal-200 text-teal-700"
-                          : "bg-purple-50 border-purple-200 text-purple-700"
-                      }`}
-                    >
-                      {getIcon(pillar.id)}
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-heading font-bold text-[#0F172A]">
-                        {pillar.title}
-                      </h3>
-                      <p className="text-xs text-purple-700/80 font-mono mt-0.5">
-                        {pillar.roleDescription}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Skills List */}
-                <div className="mt-6 space-y-3">
-                  {pillar.skills.map((skill) => (
-                    <div
-                      key={skill.name}
-                      className="p-3.5 rounded-xl bg-gray-50/80 border border-gray-200/80 hover:border-purple-200 transition-colors"
-                    >
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-sm font-medium text-[#0F172A] flex items-center gap-2">
-                          <CheckCircleIcon
-                            className={`w-4 h-4 shrink-0 ${
-                              isTeal ? "text-teal-600" : "text-purple-600"
-                            }`}
-                          />
-                          {skill.name}
-                        </span>
-                        <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 ${
-                            isTeal
-                              ? "bg-teal-50 text-teal-700 border-teal-200"
-                              : "bg-purple-50 text-purple-700 border-purple-200"
-                          }`}
-                        >
-                          {skill.level}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#475569] pl-6 leading-relaxed">
-                        {skill.note}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+        {/* Visual Tech Grid (Judul Besar & Ikon Saja — Tanpa Micro-Features & Tanpa Filter Bar) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4">
+          {techEcosystem.map((tech) => (
+            <div
+              key={tech.name}
+              className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-teal-400/80 shadow-xs hover:shadow-md transition-all duration-200 group flex items-center gap-3.5"
+            >
+              {/* Brand SVG Icon */}
+              <div className="w-11 h-11 p-2 rounded-xl bg-slate-50 border border-slate-200/60 group-hover:bg-teal-50 group-hover:border-teal-200/80 transition-colors shrink-0 flex items-center justify-center">
+                {getTechIcon(tech.iconKey)}
               </div>
-            );
-          })}
+
+              {/* Title & Domain Tag */}
+              <div className="min-w-0 flex-1">
+                <h3 className="text-base font-heading font-bold text-slate-900 group-hover:text-teal-700 transition-colors truncate">
+                  {tech.name}
+                </h3>
+                <p className="text-tiny font-sans text-slate-500 font-medium truncate mt-0.5">
+                  {tech.domain}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

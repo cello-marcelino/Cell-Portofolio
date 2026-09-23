@@ -19,7 +19,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           {/* Brand */}
           <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-purple-200">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-teal-200/80">
               <Image
                 src={personalInfo.brandLogo}
                 alt="Brand Logo"
@@ -29,10 +29,10 @@ export default function Footer() {
               />
             </div>
             <div>
-              <p className="text-sm font-heading font-bold text-[#0F172A]">
+              <p className="text-base font-heading font-bold text-slate-900">
                 Christian Marcelino
               </p>
-              <p className="text-[11px] font-mono text-gray-500">
+              <p className="text-tiny font-sans text-slate-500">
                 Informatics Engineering • Politeknik Negeri Batam
               </p>
             </div>
@@ -40,35 +40,35 @@ export default function Footer() {
 
           {/* Center Links & Copyright */}
           <div className="flex flex-col items-center sm:items-start md:items-center gap-1.5">
-            <div className="flex items-center gap-4 text-xs font-mono">
+            <div className="flex items-center gap-4 text-tiny font-sans">
               <a
                 href={personalInfo.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-gray-600 hover:text-purple-700 transition-colors font-medium"
+                className="inline-flex items-center gap-1.5 text-slate-600 hover:text-teal-700 transition-colors font-medium"
               >
                 <BootstrapGitHubIcon className="w-3.5 h-3.5" />
                 <span>GitHub</span>
               </a>
-              <span className="text-gray-300">•</span>
+              <span className="text-slate-300">•</span>
               <a
                 href={personalInfo.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-gray-600 hover:text-teal-700 transition-colors font-medium"
+                className="inline-flex items-center gap-1.5 text-slate-600 hover:text-teal-700 transition-colors font-medium"
               >
                 <BootstrapInstagramIcon className="w-3.5 h-3.5" />
                 <span>Instagram</span>
               </a>
-              <span className="text-gray-300">•</span>
+              <span className="text-slate-300">•</span>
               <a
                 href={`mailto:${personalInfo.email}`}
-                className="text-gray-600 hover:text-[#0F172A] transition-colors"
+                className="text-slate-600 hover:text-teal-700 transition-colors"
               >
                 {personalInfo.email}
               </a>
             </div>
-            <div className="text-center text-xs font-mono text-gray-500">
+            <div className="text-center text-tiny font-sans text-slate-500">
               © {new Date().getFullYear()} Christian Marcelino · Portfolio
             </div>
           </div>
@@ -77,7 +77,7 @@ export default function Footer() {
           <button
             onClick={scrollToTop}
             aria-label="Scroll back to top"
-            className="flex items-center gap-2 text-xs font-mono text-gray-600 hover:text-teal-700 transition-colors p-2 rounded-lg hover:bg-gray-200/60"
+            className="flex items-center gap-2 text-tiny font-sans text-slate-600 hover:text-teal-700 transition-colors p-2 rounded-lg hover:bg-slate-200/60 cursor-pointer"
           >
             <span>Back to top</span>
             <ArrowUpIcon className="w-3.5 h-3.5" />

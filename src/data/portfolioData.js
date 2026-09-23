@@ -12,61 +12,144 @@ export const personalInfo = {
   bio: "I am an Informatics Engineering student at Politeknik Negeri Batam and an aspiring software developer. I enjoy understanding how applications work, building web interfaces and backend services, and exploring practical applied AI through hands-on projects.",
   corePhilosophy: "I focus on writing clean, readable code and understanding fundamentals. Rather than chasing unnecessary complexity, I prefer simple structures where each component has a clear responsibility.",
   brandLogo: "/brand/cell-logo-square.png",
+  expertise: [
+    "Frontend Development",
+    "Backend Development",
+    "AI Integration",
+    "Web Full Stack Development",
+  ],
 };
 
+// 1. Mastered Programming Concepts (Focus of Engineering Overview)
+export const masteredProgrammingConcepts = [
+  {
+    id: "layered-architecture",
+    title: "Layered Architecture (Separation of Concerns)",
+    domain: "Architecture Pattern",
+    summary: "Memisahkan layer transport/HTTP dari logika bisnis dan akses database untuk modularitas dan kemudahan pengujian.",
+    flow: ["Route Handler / Controller", "Business Service Layer", "Repository / Data Access"],
+    keyPoints: ["Decoupled business logic", "Isolated data access", "Single source of truth"],
+    icon: "architecture",
+  },
+  {
+    id: "defensive-security",
+    title: "Defensive Security & Authentication",
+    domain: "Application Security",
+    summary: "Menerapkan mitigasi lapis pertama terhadap injeksi SQL dan perlindungan kredensial pengguna secara kriptografis.",
+    flow: ["Parameterized SQL Queries", "Bcrypt Salted Hashing", "Sanitized Request Payloads"],
+    keyPoints: ["Zero SQL injection vulnerability", "Cryptographic key derivation", "Strict boundary validation"],
+    icon: "security",
+  },
+  {
+    id: "relational-integrity",
+    title: "Relational Schema Design & Constraints",
+    domain: "Database Engineering",
+    summary: "Menjamin konsistensi data melalui constraint tingkat engine database daripada hanya bergantung pada kode aplikasi.",
+    flow: ["Foreign Key Constraints", "Cascade Rules & Indexes", "Versioned Schema Migrations"],
+    keyPoints: ["Referential integrity", "ACID transactional safety", "Reversible schema migrations"],
+    icon: "database",
+  },
+  {
+    id: "hybrid-ir",
+    title: "Hybrid Information Retrieval (BM25 + Vectors)",
+    domain: "Applied AI & NLP",
+    summary: "Menggabungkan presisi pencarian leksikal berbasis frekuensi kata dengan pemahaman semantik vektor konteks padat.",
+    flow: ["BM25 Exact Lexical Search", "Sentence-BERT Dense Vectors", "Normalized Rank Scoring"],
+    keyPoints: ["Exact keyword precision", "Contextual semantic recall", "Explainable recommendation outputs"],
+    icon: "search",
+  },
+  {
+    id: "http-native",
+    title: "HTTP Protocols & Native Routing",
+    domain: "Web Protocols",
+    summary: "Memahami siklus request-response HTTP dan standar RESTful secara mendalam tanpa ketergantungan framework.",
+    flow: ["Stateless Requests & Responses", "Standard HTTP Verbs & Status", "Resource-Oriented REST URIs"],
+    keyPoints: ["Native Node.js HTTP/FS handling", "Deterministic HTTP status codes", "Clean API contract design"],
+    icon: "network",
+  },
+  {
+    id: "clean-code",
+    title: "Clean Code & Practical Minimalism",
+    domain: "Software Craftsmanship",
+    summary: "Menulis kode yang mudah dibaca, memiliki tanggung jawab tunggal, dan menolak abstraksi prematur yang tidak dibutuhkan.",
+    flow: ["Single Responsibility Principle", "KISS & YAGNI Directives", "Predictable Project Layout"],
+    keyPoints: ["Self-explanatory naming", "Low coupling & high cohesion", "Maintainability over cleverness"],
+    icon: "code",
+  },
+];
+
+// 2. Tech Ecosystem (Judul Besar Saja — No Micro-Features)
+export const techEcosystem = [
+  { name: "Next.js", domain: "Full-Stack React", iconKey: "NextjsIcon", category: "frontend" },
+  { name: "React", domain: "UI Library", iconKey: "ReactIcon", category: "frontend" },
+  { name: "Vue.js", domain: "SPA Framework", iconKey: "VueIcon", category: "frontend" },
+  { name: "Laravel", domain: "Full-Stack PHP", iconKey: "LaravelIcon", category: "backend" },
+  { name: "Flask", domain: "Python REST API", iconKey: "FlaskIcon", category: "backend" },
+  { name: "Livewire", domain: "Reactive Full-Stack", iconKey: "LivewireIcon", category: "frontend" },
+  { name: "Tailwind CSS", domain: "Utility Styling", iconKey: "TailwindIcon", category: "frontend" },
+  { name: "Node.js", domain: "JavaScript Runtime", iconKey: "NodejsIcon", category: "backend" },
+  { name: "Python", domain: "Language & Runtime", iconKey: "PythonIcon", category: "backend" },
+  { name: "MySQL", domain: "Relational Database", iconKey: "MySQLIcon", category: "database" },
+  { name: "SQLite", domain: "Embedded Database", iconKey: "SQLiteIcon", category: "database" },
+  { name: "Git", domain: "Version Control", iconKey: "GitIcon", category: "tools" },
+  { name: "GitHub", domain: "Platform & Remote", iconKey: "GitHubIcon", category: "tools" },
+  { name: "TensorFlow", domain: "Deep Learning", iconKey: "TensorFlowIcon", category: "ai" },
+  { name: "Scikit-learn", domain: "Machine Learning", iconKey: "ScikitlearnIcon", category: "ai" },
+  { name: "Streamlit", domain: "Data Apps & Prototyping", iconKey: "StreamlitIcon", category: "ai" },
+  { name: "Chart.js", domain: "Data Visualization", iconKey: "ChartjsIcon", category: "frontend" },
+  { name: "Pytest", domain: "Unit Testing", iconKey: "PytestIcon", category: "tools" },
+  { name: "Postman", domain: "API Testing", iconKey: "PostmanIcon", category: "tools" },
+];
+
+// 3. Operational Soft Skills
+export const engineeringSoftSkills = [
+  {
+    title: "Time & Shift Management",
+    metric: "Industrial Shift Balance",
+    badge: "Discipline",
+    highlights: [
+      "Balancing rotating shifts in EV manufacturing with full-time university engineering studies",
+      "Meeting software sprint deliverables consistently without missing coursework milestones",
+    ],
+  },
+  {
+    title: "SOP & Quality Inspection",
+    metric: "Process Compliance",
+    badge: "Zero-Defect Mindset",
+    highlights: [
+      "Strict compliance with standard operating procedures and industrial safety regulations",
+      "Checklist-driven inspection to eliminate assembly defects and data errors",
+    ],
+  },
+  {
+    title: "Systematic Documentation",
+    metric: "Archival Integrity",
+    badge: "Data Organization",
+    highlights: [
+      "Hands-on indexing, classifying, and structuring physical & digital land records at BP Batam",
+      "Writing clear technical documentation, architectural notes, and clean commit history",
+    ],
+  },
+  {
+    title: "Iterative Learning & Adaptability",
+    metric: "Continuous Growth",
+    badge: "Agile Mindset",
+    highlights: [
+      "Rapidly adopting new frameworks across Laravel, Vue, Next.js, and Python ML toolchains",
+      "Translating complex algorithmic requirements into clean, practical code implementations",
+    ],
+  },
+];
+
+// Retain legacy exports for backward compatibility
+export const engineeringFrameworks = techEcosystem.slice(0, 7);
+export const engineeringTools = techEcosystem.slice(7);
+export const engineeringConcepts = masteredProgrammingConcepts;
 export const techPillars = [
-  {
-    id: "frontend",
-    title: "Frontend Development",
-    roleDescription: "Building responsive web interfaces with component frameworks and native web standards.",
-    skills: [
-      { name: "Vue 3 (Composition API, Pinia)", level: "SPA Framework", note: "Built reactive client applications with structured stores and API integration." },
-      { name: "Next.js & React (App Router)", level: "Web Framework", note: "Built web interfaces with Next.js and React, including server-rendered and static pages." },
-      { name: "Tailwind CSS", level: "Styling", note: "Used utility-first CSS to create clean, consistent, and responsive user interfaces." },
-      { name: "Chart.js", level: "Data Views", note: "Implemented interactive charts for monthly payment analytics and data summaries." },
-      { name: "JavaScript & DOM APIs", level: "Fundamentals", note: "Used native JavaScript and DOM APIs to build lightweight interactive features." },
-    ],
-    accent: "teal",
-  },
-  {
-    id: "backend",
-    title: "Backend Development",
-    roleDescription: "Building modular REST APIs, structuring controllers, and organizing application logic.",
-    skills: [
-      { name: "Python / Flask", level: "API Service", note: "Structured modular REST endpoints using blueprints, services, and repository layers." },
-      { name: "Native Node.js (HTTP & FS)", level: "Fundamentals", note: "Built routing and request handling using Node.js without Express to understand HTTP fundamentals." },
-      { name: "PHP / Laravel 13 & Livewire 4", level: "Full-Stack MVC", note: "Implemented full-stack web features, reactive carts, and relational database models." },
-      { name: "Layered Structure (Controller-Service-Repo)", level: "Pattern", note: "Separated route handlers, business rules, and database queries for clarity." },
-      { name: "Auth & Security Basics (Bcrypt)", level: "Security", note: "Used parameterized queries to reduce SQL injection risk and hashed passwords with Bcrypt." },
-    ],
-    accent: "purple",
-  },
-  {
-    id: "ai",
-    title: "Applied AI & Data Science",
-    roleDescription: "Exploring practical text matching, machine learning models, and local LLM prototypes.",
-    skills: [
-      { name: "Hybrid Text Matching (BM25 + Sentence-BERT)", level: "Text Matching", note: "Combined keyword matching and dense embeddings for semantic search experimentation." },
-      { name: "KeyBERT (Keyword Extraction)", level: "NLP Analysis", note: "Extracted overlapping topic keywords to explain recommendation outputs clearly." },
-      { name: "Scikit-learn, XGBoost, CatBoost", level: "Machine Learning", note: "Trained tabular classifiers and evaluated accuracy, precision, recall, and F1 scores." },
-      { name: "TensorFlow (LSTM Networks)", level: "Deep Learning", note: "Experimented with sequential recurrent neural networks on pattern data." },
-      { name: "Streamlit", level: "Tooling", note: "Built interactive dashboards for model diagnostics and parameter testing." },
-    ],
-    accent: "teal",
-  },
-  {
-    id: "database",
-    title: "Database & Development Tools",
-    roleDescription: "Designing relational database schemas, writing safe queries, and version control.",
-    skills: [
-      { name: "MySQL & SQLite3", level: "Relational DB", note: "Designed relational tables with foreign keys and cascade rules for data consistency." },
-      { name: "Parameterized SQL Queries", level: "Query Safety", note: "Used parameterized queries in application code to prevent SQL injection." },
-      { name: "Schema Migrations & Seeders", level: "Data Management", note: "Used migrations for database schema changes and seeders for test data." },
-      { name: "Git & GitHub", level: "Version Control", note: "Used branches, descriptive commit messages, and repository workflows." },
-      { name: "Testing Basics (Pytest)", level: "Testing", note: "Wrote unit tests for core scoring functions and utility helpers." },
-    ],
-    accent: "purple",
-  },
+  { id: "frontend", title: "Frontend Development", roleDescription: "Building responsive web interfaces with component frameworks and native web standards.", skills: [] },
+  { id: "backend", title: "Backend Development", roleDescription: "Building modular REST APIs, structuring controllers, and organizing application logic.", skills: [] },
+  { id: "ai", title: "Applied AI & Data Science", roleDescription: "Exploring practical text matching, machine learning models, and local LLM prototypes.", skills: [] },
+  { id: "database", title: "Database & Development Tools", roleDescription: "Designing relational database schemas, writing safe queries, and version control.", skills: [] },
 ];
 
 export const featuredProjects = [
@@ -80,7 +163,7 @@ export const featuredProjects = [
     architecture: "Decoupled Setup (Flask REST API + Vue 3 SPA + Tailwind CSS)",
     repoUrl: "https://github.com/cello-marcelino/Sistem-Rekomendasi-Dosen",
     overview:
-      "SiReDo is a university prototype built during Semester 4 to explore how lexical and semantic text matching can help match students with thesis supervisors and examiners. It compares submitted thesis proposals with lecturer academic profiles and provides keyword explanations for each recommendation.",
+      "Academic recommendation system matching student thesis proposals with faculty supervisors through dual-engine lexical and semantic text retrieval.",
     caseStudy: {
       whatIBuilt:
         "Built a decoupled web application with a Python Flask REST API backend and a Vue 3 single-page application frontend. The system accepts thesis titles and abstracts, scores lecturer relevance, and presents ranked recommendations alongside explanatory keywords.",
@@ -134,7 +217,7 @@ export const featuredProjects = [
     architecture: "Laravel 13 + Livewire 4 + MySQL + Tailwind CSS",
     repoUrl: "https://github.com/cello-marcelino/manies-cakery",
     overview:
-      "A university semester project built with Laravel and Livewire for a local bakery business scenario. It features product browsing, shopping cart updates without full page reloads, an order placement flow, and a simple administrative dashboard for order tracking.",
+      "Full-stack reactive bakery ordering platform with server-driven cart states, transactional checkout, and relational order persistence.",
     caseStudy: {
       whatIBuilt:
         "Developed a full-stack e-commerce web application with customer-facing catalog pages, an interactive cart, and an admin management interface for reviewing customer orders.",
@@ -332,7 +415,7 @@ export const experienceTimeline = [
     company: "Politeknik Negeri Batam",
     location: "Batam, Indonesia",
     type: "Education",
-    badgeColor: "purple",
+    badgeColor: "teal",
     description:
       "Pursuing a degree in Informatics Engineering. Progression across semesters has built a structured foundation moving from programming fundamentals toward web development, databases, machine learning, and applied NLP.",
     keyTakeaways: [
@@ -378,7 +461,7 @@ export const experienceTimeline = [
     company: "SMK Permata Harapan 2",
     location: "Batam, Indonesia",
     type: "Education",
-    badgeColor: "purple",
+    badgeColor: "teal",
     description:
       "Built an early foundation in programming, databases, and web development through vocational software engineering coursework.",
     keyTakeaways: [
@@ -394,7 +477,7 @@ export const experienceHighlights = [
     label: "Time Management",
     metric: "Shift & Study Balance",
     description: "Balancing rotating shifts in manufacturing with full-time university coursework and completing software projects.",
-    accent: "purple",
+    accent: "teal",
   },
   {
     label: "Attention to Detail",
@@ -406,6 +489,6 @@ export const experienceHighlights = [
     label: "Data Organization",
     metric: "Structured Documentation",
     description: "Hands-on practice indexing, classifying, and organizing digital and physical records during institutional internships.",
-    accent: "purple",
+    accent: "teal",
   },
 ];

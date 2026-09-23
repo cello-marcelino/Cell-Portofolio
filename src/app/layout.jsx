@@ -1,5 +1,8 @@
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import InteractiveBackground from "@/components/InteractiveBackground";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -41,14 +44,23 @@ export const metadata = {
   },
 };
 
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import CustomCursor from "@/components/CustomCursor";
+
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="min-h-screen bg-[#FBFBFA] text-[#0F172A] antialiased selection:bg-teal-100 selection:text-teal-900">
-        {children}
+      <body className="min-h-screen bg-[#FBFBFA] text-[#0F172A] antialiased selection:bg-teal-100 selection:text-teal-900 relative overflow-x-hidden">
+        <CustomCursor />
+        <InteractiveBackground />
+        <Navbar />
+        <SmoothScrollProvider>
+          {children}
+          <Footer />
+        </SmoothScrollProvider>
       </body>
     </html>
   );

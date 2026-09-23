@@ -1,22 +1,25 @@
 {
-  "name": "marcell-portfolio",
+  "name": "marcell-portofolio",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint src"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@heroicons/react": "^2.2.0",
-    "framer-motion": "^12.4.7",
+    "gsap": "^3.15.0",
     "next": "^15.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.9",
+    "eslint": "^9",
+    "eslint-config-next": "^15.2.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.0.9"
   }

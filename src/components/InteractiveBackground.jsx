@@ -37,7 +37,7 @@ export default function InteractiveBackground() {
       vx: (Math.random() - 0.5) * 0.35,
       vy: (Math.random() - 0.5) * 0.35,
       size: Math.random() * 2 + 1,
-      color: Math.random() > 0.5 ? "rgba(109, 40, 217, " : "rgba(13, 148, 136, ",
+      color: Math.random() > 0.5 ? "rgba(13, 148, 136, " : "rgba(148, 163, 184, ",
       alpha: Math.random() * 0.35 + 0.15,
     }));
 
@@ -96,7 +96,7 @@ export default function InteractiveBackground() {
         height * 0.2,
         width * 0.6
       );
-      bgGrad1.addColorStop(0, "rgba(109, 40, 217, 0.04)");
+      bgGrad1.addColorStop(0, "rgba(13, 148, 136, 0.03)");
       bgGrad1.addColorStop(1, "rgba(251, 251, 250, 0)");
       ctx.fillStyle = bgGrad1;
       ctx.fillRect(0, 0, width, height);
@@ -123,8 +123,8 @@ export default function InteractiveBackground() {
         mouse.y,
         mouse.radius
       );
-      mouseSpotlight.addColorStop(0, "rgba(13, 148, 136, 0.07)");
-      mouseSpotlight.addColorStop(0.4, "rgba(109, 40, 217, 0.05)");
+      mouseSpotlight.addColorStop(0, "rgba(13, 148, 136, 0.06)");
+      mouseSpotlight.addColorStop(0.4, "rgba(20, 184, 166, 0.03)");
       mouseSpotlight.addColorStop(1, "rgba(251, 251, 250, 0)");
       ctx.fillStyle = mouseSpotlight;
       ctx.fillRect(0, 0, width, height);
@@ -146,7 +146,7 @@ export default function InteractiveBackground() {
           const cellY = r * gridSize;
 
           // Glowing fill for active cell in light mode
-          ctx.fillStyle = `rgba(109, 40, 217, ${nextVal * 0.05})`;
+          ctx.fillStyle = `rgba(13, 148, 136, ${nextVal * 0.04})`;
           ctx.fillRect(cellX, cellY, gridSize, gridSize);
 
           // Highlight border
@@ -168,7 +168,7 @@ export default function InteractiveBackground() {
           if (distToMouse < mouse.radius) {
             const factor = 1 - distToMouse / mouse.radius;
             pointAlpha = 0.3 + factor * 0.5;
-            pointColor = factor > 0.5 ? "13, 148, 136" : "109, 40, 217"; // teal / purple
+            pointColor = factor > 0.5 ? "13, 148, 136" : "148, 163, 184"; // teal / slate
           }
 
           ctx.fillStyle = `rgba(${pointColor}, ${pointAlpha})`;
@@ -224,8 +224,8 @@ export default function InteractiveBackground() {
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
       <canvas ref={canvasRef} className="w-full h-full block" />
       {/* Light mode soft vignette */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(109,40,217,0.03)_0%,transparent_70%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(251,251,250,0.5)_80%,#FBFBFA_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(13,148,136,0.03)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(251,251,250,0.15)_80%,transparent_100%)]" />
     </div>
   );
 }

@@ -59,7 +59,7 @@ export default function Navbar() {
           href="#overview"
           className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-teal-500 rounded-lg p-1"
         >
-          <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-purple-200 group-hover:border-teal-500 transition-all shadow-sm">
+          <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-teal-200 group-hover:border-teal-600 transition-all shadow-sm">
             <Image
               src={personalInfo.brandLogo}
               alt="Christian Marcelino Logo"
@@ -71,8 +71,7 @@ export default function Navbar() {
           </div>
           <div className="flex flex-col">
             <span className="font-heading font-bold text-base tracking-tight text-[#0F172A] flex items-center gap-1.5 group-hover:text-teal-700 transition-colors">
-              Christian Marcelino <span className="text-gray-400 font-normal">·</span> <span className="text-gray-500 font-mono text-xs sm:text-sm font-normal">Portfolio</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+              Christian Marcelino <span className="text-gray-400 font-normal">·</span> <span className="text-gray-500 font-sans text-tiny font-normal">Portfolio</span>
             </span>
           </div>
         </Link>
@@ -85,9 +84,9 @@ export default function Navbar() {
               <a
                 key={link.label}
                 href={link.href}
-                className={`px-3.5 py-1 text-xs font-medium rounded-full transition-all duration-200 ${
+                className={`px-3.5 py-1 text-tiny font-sans font-medium rounded-full transition-all duration-200 ${
                   isActive
-                    ? "bg-purple-50 text-purple-700 border border-purple-200 font-semibold shadow-xs"
+                    ? "bg-teal-50 text-teal-800 border border-teal-200/80 font-semibold shadow-xs"
                     : "text-gray-600 hover:text-[#0F172A] hover:bg-gray-100"
                 }`}
               >
@@ -103,7 +102,7 @@ export default function Navbar() {
             href={personalInfo.cvDownloadUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium font-mono text-white bg-teal-600 hover:bg-teal-700 border border-teal-500/30 rounded-full shadow-sm hover:shadow transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+            className="inline-flex items-center gap-2 px-4 py-2 text-tiny font-sans font-semibold text-white bg-teal-700 hover:bg-teal-800 border border-teal-600/30 rounded-full shadow-sm hover:shadow transition-all transform hover:-translate-y-0.5 active:translate-y-0"
           >
             <ArrowDownTrayIcon className="w-4 h-4" />
             Download CV
@@ -115,7 +114,7 @@ export default function Navbar() {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            className="p-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:text-[#0F172A] hover:border-teal-500 transition-colors shadow-xs"
+            className="p-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:text-[#0F172A] hover:border-teal-500 transition-colors shadow-xs cursor-pointer"
           >
             {mobileMenuOpen ? (
               <XMarkIcon className="w-6 h-6" />
@@ -134,7 +133,7 @@ export default function Navbar() {
               key={link.label}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-gray-700 hover:text-teal-700 border-b border-gray-100"
+              className="block py-2 text-base font-sans font-medium text-gray-700 hover:text-teal-700 border-b border-gray-100"
             >
               {link.label}
             </a>
@@ -145,7 +144,7 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-medium font-mono text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-tiny font-sans font-semibold text-white bg-teal-700 hover:bg-teal-800 rounded-lg shadow-sm"
             >
               <ArrowDownTrayIcon className="w-4 h-4" />
               Download CV (PDF)

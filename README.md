@@ -5,10 +5,10 @@ Personal software engineering portfolio showcasing web development, backend serv
 ## Tech Stack
 
 - **Framework:** Next.js 15 (App Router)
-- **UI & Components:** React 19, Tailwind CSS v4, Lightswind UI
+- **UI & Components:** React 19 (Server & Client Components), Tailwind CSS v4 (Utility-First)
 - **Typography:** Space Grotesk, Inter, JetBrains Mono
 - **Icons:** Heroicons & Bootstrap Icons (Official SVGs)
-- **Animation & Canvas:** HTML5 60 FPS Interactive Grid Canvas, Framer Motion
+- **Animation & Canvas:** HTML5 60 FPS Interactive Grid Canvas (Native zero-dependency)
 
 ## Getting Started
 
