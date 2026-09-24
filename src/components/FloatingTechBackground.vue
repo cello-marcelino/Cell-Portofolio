@@ -237,6 +237,48 @@ let lastMouseTime = performance.now();
 let isMouseActive = false;
 let mouseDecayTimeout = null;
 
+// Dynamic Attraction & Repulsion Shockwave state
+let isAttracting = false;
+let attractionStart = 0;
+let attractionPos = { x: 0, y: 0 };
+let activePointerId = null;
+
+// Visual energy feedback ring
+const shockwaveState = ref({
+  active: false,
+  x: 0,
+  y: 0,
+  exploding: false,
+});
+
+// Guard: verify if click/pointer target is an interactive component
+const isInteractiveElement = (target) => {
+  if (!target || !(target instanceof Element)) return false;
+  return !!target.closest(
+    'button, a, input, textarea, select, option, label, [role="button"], [role="link"], [role="tab"], [tabindex]:not([tabindex="-1"]), nav, header'
+  );
+};
+
+const handlePointerDown = (e) => {
+  // Only primary mouse click or direct touch
+  if (e.button !== 0 && e.pointerType === 'mouse') return;
+  // If user clicked interactive element, leave it completely alone!
+  if (isInteractiveElement(e.target)) return;
+
+  isAttracting = true;
+  attractionStart = performance.now();
+  attractionPos.x = e.clientX;
+  attractionPos.y = e.clientY;
+  activePointerId = e.pointerId;
+
+  shockwaveState.value = {
+    active: true,
+    x: e.clientX,
+    y: e.clientY,
+    exploding: false,
+  };
+};
+
 const handlePointerMove = (e) => {
   const now = performance.now();
   const dt = Math.max((now - lastMouseTime) / 1000, 0.008);
@@ -259,6 +301,14 @@ const handlePointerMove = (e) => {
   lastMouseTime = now;
   isMouseActive = true;
 
+  // If attraction is active, update attraction point to follow cursor smoothly!
+  if (isAttracting && (activePointerId === null || e.pointerId === activePointerId)) {
+    attractionPos.x = e.clientX;
+    attractionPos.y = e.clientY;
+    shockwaveState.value.x = e.clientX;
+    shockwaveState.value.y = e.clientY;
+  }
+
   if (mouseDecayTimeout) clearTimeout(mouseDecayTimeout);
   mouseDecayTimeout = setTimeout(() => {
     mouseVel.x = 0;
@@ -266,12 +316,70 @@ const handlePointerMove = (e) => {
   }, 100);
 };
 
-const handlePointerLeave = () => {
-  isMouseActive = false;
-  mousePos.x = -9999;
-  mousePos.y = -9999;
-  mouseVel.x = 0;
-  mouseVel.y = 0;
+const handlePointerUp = (e) => {
+  if (!isAttracting || (activePointerId !== null && e.pointerId !== activePointerId)) {
+    return;
+  }
+
+  const now = performance.now();
+  const holdDuration = (now - attractionStart) / 1000; // in seconds
+  const releasePoint = { ...attractionPos };
+
+  isAttracting = false;
+  activePointerId = null;
+
+  // Release accumulated energy as an explosive repulsion shockwave
+  if (holdDuration >= 0.06) {
+    shockwaveState.value.exploding = true;
+    setTimeout(() => {
+      shockwaveState.value.active = false;
+      shockwaveState.value.exploding = false;
+    }, 450);
+
+    // Charge power multiplier: grows with hold duration (capped between 0.45 and 3.2)
+    const chargePower = Math.min(Math.max((holdDuration - 0.04) * 1.8, 0.45), 3.2);
+
+    for (let i = 0; i < bodies.length; i++) {
+      const body = bodies[i];
+      const dx = body.position.x - releasePoint.x;
+      const dy = body.position.y - releasePoint.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Base angle radiating outward from cursor
+      let angle = dist > 4 ? Math.atan2(dy, dx) : Math.random() * Math.PI * 2;
+      // Add subtle organic angular jitter (+- 12 deg)
+      angle += (Math.random() - 0.5) * 0.42;
+
+      // Distance factor: closer icons receive stronger blast
+      const distFactor = Math.min(Math.max(380 / (dist + 90), 0.35), 2.8);
+
+      // Magnitude jitter (+- 15%)
+      const magJitter = 0.85 + Math.random() * 0.3;
+
+      // Base blast speed
+      const baseBlast = 10.5;
+      const blastSpeed = baseBlast * chargePower * distFactor * magJitter;
+
+      // Clamp to safe physical maximum to prevent wall tunneling
+      const maxSpeed = 28;
+      const finalSpeed = Math.min(blastSpeed, maxSpeed);
+
+      const vx = Math.cos(angle) * finalSpeed;
+      const vy = Math.sin(angle) * finalSpeed;
+
+      // Apply blast velocity
+      Body.setVelocity(body, {
+        x: body.velocity.x * 0.3 + vx,
+        y: body.velocity.y * 0.3 + vy,
+      });
+
+      // Impart dynamic angular spin
+      const spinKick = (Math.random() - 0.5) * 0.28 * Math.min(chargePower, 2.0);
+      Body.setAngularVelocity(body, spinKick);
+    }
+  } else {
+    shockwaveState.value.active = false;
+  }
 };
 
 const respawnToken = (body, token) => {
@@ -382,7 +490,7 @@ const initPhysics = () => {
     img.src = token.icon;
   });
 
-  // 5. 60 FPS requestAnimationFrame render loop with passive mouse deflection
+  // 5. 60 FPS requestAnimationFrame render loop
   const mouseRadius = 85;
   const mouseRadiusSq = mouseRadius * mouseRadius;
   let lastTime = performance.now();
@@ -391,8 +499,41 @@ const initPhysics = () => {
     const delta = Math.min(now - lastTime, 33.33);
     lastTime = now;
 
-    // Passive Mouse Deflection Physics (No click/hold required)
-    if (isMouseActive) {
+    // A. Dynamic Gravity Attraction Vortex (when pointer is pressed on empty area)
+    if (isAttracting) {
+      const holdDuration = (now - attractionStart) / 1000;
+      // Multiplier ramps up smoothly from 1.0 to 3.5 based on hold time
+      const timeMultiplier = Math.min(1.0 + holdDuration * 1.5, 3.5);
+
+      for (let i = 0; i < bodies.length; i++) {
+        const body = bodies[i];
+        const dx = attractionPos.x - body.position.x;
+        const dy = attractionPos.y - body.position.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 12) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          // Pull force: stronger when closer, with gentle inverse-root scaling
+          const pullMagnitude = (0.00032 / Math.sqrt(dist + 20)) * timeMultiplier;
+
+          // Tangential swirl component for organic vortex motion
+          const swirlFactor = pullMagnitude * 0.22;
+          const swirlX = -ny * swirlFactor;
+          const swirlY = nx * swirlFactor;
+
+          const fx = nx * pullMagnitude + swirlX;
+          const fy = ny * pullMagnitude + swirlY;
+
+          Body.applyForce(body, body.position, { x: fx, y: fy });
+
+          // Gentle angular spin matching vortex direction
+          Body.setAngularVelocity(body, body.angularVelocity * 0.98 + 0.008);
+        }
+      }
+    } else if (isMouseActive) {
+      // B. Passive Mouse Deflection Physics (when cursor merely moves without click)
       const speedSq = mouseVel.x * mouseVel.x + mouseVel.y * mouseVel.y;
       const swipeSpeed = Math.min(Math.sqrt(speedSq), 2200);
 
@@ -444,10 +585,12 @@ const initPhysics = () => {
         respawnToken(body, token);
       }
 
-      // Gentle tilt stabilization spring (gradually restores aesthetic organic angle)
-      const angleDiff = token.targetRad - body.angle;
-      body.torque += angleDiff * 0.00035;
-      body.angularVelocity *= 0.985;
+      // Gentle tilt stabilization spring (gradually restores aesthetic organic angle when undisturbed)
+      if (!isAttracting) {
+        const angleDiff = token.targetRad - body.angle;
+        body.torque += angleDiff * 0.00035;
+        body.angularVelocity *= 0.985;
+      }
 
       // Subtle ambient micro-sway for floating feel
       body.force.x += Math.sin(now * 0.001 + token.seed) * 0.000035;
@@ -480,7 +623,10 @@ const handleResize = () => {
 
 onMounted(() => {
   initPhysics();
+  window.addEventListener('pointerdown', handlePointerDown, { passive: true });
   window.addEventListener('pointermove', handlePointerMove, { passive: true });
+  window.addEventListener('pointerup', handlePointerUp, { passive: true });
+  window.addEventListener('pointercancel', handlePointerUp, { passive: true });
   window.addEventListener('pointerleave', handlePointerLeave, { passive: true });
   window.addEventListener('resize', handleResize, { passive: true });
 });
@@ -488,7 +634,10 @@ onMounted(() => {
 onUnmounted(() => {
   if (animationFrameId) cancelAnimationFrame(animationFrameId);
   if (mouseDecayTimeout) clearTimeout(mouseDecayTimeout);
+  window.removeEventListener('pointerdown', handlePointerDown);
   window.removeEventListener('pointermove', handlePointerMove);
+  window.removeEventListener('pointerup', handlePointerUp);
+  window.removeEventListener('pointercancel', handlePointerUp);
   window.removeEventListener('pointerleave', handlePointerLeave);
   window.removeEventListener('resize', handleResize);
 
@@ -504,6 +653,21 @@ onUnmounted(() => {
     class="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
     aria-hidden="true"
   >
+    <!-- Visual Energy Aura / Shockwave Pulse Indicator -->
+    <div
+      v-if="shockwaveState.active"
+      class="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-teal-500/40 bg-teal-400/10 backdrop-blur-[1px] transition-all"
+      :class="[
+        shockwaveState.exploding
+          ? 'scale-[4.5] opacity-0 duration-500 ease-out'
+          : 'w-16 h-16 animate-pulse opacity-80 duration-200',
+      ]"
+      :style="{
+        left: `${shockwaveState.x}px`,
+        top: `${shockwaveState.y}px`,
+      }"
+    />
+
     <!-- Physics-driven passive floating rain tech badges -->
     <div
       v-for="(item, idx) in rainTokens"
