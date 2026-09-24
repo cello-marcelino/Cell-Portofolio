@@ -18,35 +18,30 @@ const rawRainTokens = [
   {
     name: 'Vue.js',
     icon: '/icons/tech/vue.png',
-    left: '2.5%',
     tilt: -16,
     opacity: 0.85,
   },
   {
     name: 'Python',
     icon: '/icons/tech/python.png',
-    left: '6.5%',
     tilt: 18,
     opacity: 0.8,
   },
   {
     name: 'Node.js',
     icon: '/icons/tech/nodejs.png',
-    left: '11%',
     tilt: -22,
     opacity: 0.82,
   },
   {
     name: 'Tailwind CSS',
     icon: '/icons/tech/tailwind.png',
-    left: '15.5%',
     tilt: 15,
     opacity: 0.75,
   },
   {
     name: 'Sentence-BERT',
     icon: '/icons/tech/sentence-bert.png',
-    left: '19.5%',
     tilt: -14,
     opacity: 0.72,
   },
@@ -55,28 +50,24 @@ const rawRainTokens = [
   {
     name: 'FastAPI',
     icon: '/icons/tech/fastapi.png',
-    left: '24%',
     tilt: 16,
     opacity: 0.68,
   },
   {
     name: 'Flask',
     icon: '/icons/tech/flask.png',
-    left: '28.5%',
     tilt: -19,
     opacity: 0.62,
   },
   {
     name: 'SQLite',
     icon: '/icons/tech/sqlite.png',
-    left: '33%',
     tilt: 14,
     opacity: 0.65,
   },
   {
     name: 'Scikit-Learn',
     icon: '/icons/tech/scikit-learn.png',
-    left: '37.5%',
     tilt: -12,
     opacity: 0.6,
   },
@@ -85,28 +76,24 @@ const rawRainTokens = [
   {
     name: 'Streamlit',
     icon: '/icons/tech/streamlit.png',
-    left: '42%',
     tilt: 19,
     opacity: 0.58,
   },
   {
     name: 'TensorFlow',
     icon: '/icons/tech/tensorflow.png',
-    left: '46.5%',
     tilt: -16,
     opacity: 0.62,
   },
   {
     name: 'BM25',
     icon: '/icons/tech/bm25.png',
-    left: '51%',
     tilt: 21,
     opacity: 0.58,
   },
   {
     name: 'Chart.js',
     icon: '/icons/tech/chartjs.png',
-    left: '55.5%',
     tilt: -15,
     opacity: 0.6,
   },
@@ -115,35 +102,30 @@ const rawRainTokens = [
   {
     name: 'Livewire',
     icon: '/icons/tech/livewire.png',
-    left: '60.5%',
     tilt: 18,
     opacity: 0.65,
   },
   {
     name: 'Laravel',
     icon: '/icons/tech/laravel.png',
-    left: '65%',
     tilt: -20,
     opacity: 0.68,
   },
   {
     name: 'Postman',
     icon: '/icons/tech/postman.png',
-    left: '69.5%',
     tilt: 14,
     opacity: 0.64,
   },
   {
     name: 'Pytest',
     icon: '/icons/tech/pytest.png',
-    left: '74%',
     tilt: -17,
     opacity: 0.66,
   },
   {
     name: 'Python',
     icon: '/icons/tech/python.png',
-    left: '78.5%',
     tilt: 16,
     opacity: 0.72,
   },
@@ -152,35 +134,30 @@ const rawRainTokens = [
   {
     name: 'React',
     icon: '/icons/tech/react.png',
-    left: '83%',
     tilt: 19,
     opacity: 0.84,
   },
   {
     name: 'Next.js',
     icon: '/icons/tech/nextjs.png',
-    left: '87%',
     tilt: -18,
     opacity: 0.82,
   },
   {
     name: 'MySQL',
     icon: '/icons/tech/mysql.png',
-    left: '91%',
     tilt: 20,
     opacity: 0.78,
   },
   {
     name: 'Git',
     icon: '/icons/tech/git.png',
-    left: '94.5%',
     tilt: -15,
     opacity: 0.76,
   },
   {
     name: 'GitHub',
     icon: '/icons/tech/github.png',
-    left: '97.5%',
     tilt: 13,
     opacity: 0.74,
   },
@@ -189,21 +166,18 @@ const rawRainTokens = [
   {
     name: 'Vue.js',
     icon: '/icons/tech/vue.png',
-    left: '31%',
     tilt: -16,
     opacity: 0.6,
   },
   {
     name: 'Node.js',
     icon: '/icons/tech/nodejs.png',
-    left: '49%',
     tilt: 22,
     opacity: 0.55,
   },
   {
     name: 'FastAPI',
     icon: '/icons/tech/fastapi.png',
-    left: '67%',
     tilt: -13,
     opacity: 0.65,
   },
@@ -400,6 +374,17 @@ const handlePointerUp = (e) => {
   }
 };
 
+const handlePointerLeave = () => {
+  isMouseActive = false;
+  mousePos.x = -9999;
+  mousePos.y = -9999;
+  mouseVel.x = 0;
+  mouseVel.y = 0;
+  if (isAttracting) {
+    handlePointerUp({ button: 0 });
+  }
+};
+
 const respawnToken = (body, token) => {
   const winW = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const spawnX = Math.random() * (winW - 80) + 40;
@@ -502,13 +487,7 @@ const initPhysics = () => {
 
   Composite.add(world, bodies);
 
-  // 4. In-memory image preloading
-  rainTokens.forEach((token) => {
-    const img = new Image();
-    img.src = token.icon;
-  });
-
-  // 5. 60 FPS requestAnimationFrame render loop
+  // 4. 60 FPS requestAnimationFrame render loop
   const mouseRadius = 85;
   const mouseRadiusSq = mouseRadius * mouseRadius;
   let lastTime = performance.now();

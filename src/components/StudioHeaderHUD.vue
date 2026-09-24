@@ -20,28 +20,39 @@ const navLinks = [
   { label: 'Contact', href: '#contact' },
 ];
 
-const handleScroll = () => {
+let scrollRafId = null;
+
+const updateScrollState = () => {
   scrolled.value = window.scrollY > 20;
 
-  const sections = navLinks.map((l) => l.href.substring(1));
-  for (let i = sections.length - 1; i >= 0; i--) {
-    const el = document.getElementById(sections[i]);
+  for (let i = navLinks.length - 1; i >= 0; i--) {
+    const id = navLinks[i].href.substring(1);
+    const el = document.getElementById(id);
     if (el) {
       const rect = el.getBoundingClientRect();
       if (rect.top <= 140) {
-        activeSection.value = sections[i];
+        activeSection.value = id;
         break;
       }
     }
   }
 };
 
+const handleScroll = () => {
+  if (scrollRafId !== null) return;
+  scrollRafId = requestAnimationFrame(() => {
+    updateScrollState();
+    scrollRafId = null;
+  });
+};
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true });
-  handleScroll();
+  updateScrollState();
 });
 
 onUnmounted(() => {
+  if (scrollRafId !== null) cancelAnimationFrame(scrollRafId);
   window.removeEventListener('scroll', handleScroll);
 });
 </script>

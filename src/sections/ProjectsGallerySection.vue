@@ -206,6 +206,7 @@ onUnmounted(() => {
               :alt="currentProject.title"
               class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
               loading="lazy"
+              decoding="async"
             />
 
             <!-- Top Overlay Telemetry Badge -->
@@ -348,7 +349,7 @@ onUnmounted(() => {
           "
         >
           <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-900 shrink-0">
-            <img :src="proj.primaryVisual" :alt="proj.title" class="w-full h-full object-cover object-top" />
+            <img :src="proj.primaryVisual" :alt="proj.title" class="w-full h-full object-cover object-top" loading="lazy" decoding="async" width="40" height="40" />
           </div>
           <div class="truncate">
             <div class="text-xs font-heading font-bold text-slate-900 truncate">
@@ -379,6 +380,7 @@ onUnmounted(() => {
             :alt="project.title"
             class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
+            decoding="async"
           />
 
           <!-- Overlay Badge -->
