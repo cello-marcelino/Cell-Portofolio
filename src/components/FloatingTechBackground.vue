@@ -324,12 +324,38 @@ const initPhysics = () => {
 
   Composite.add(world, [leftWall, rightWall, ceiling]);
 
-  // 3. Create 26 rigid body badges with floaty air resistance
+  // 3. Create 26 rigid body badges evenly and randomly distributed across the viewport
+  // Uses shuffled stratified sampling so startX and startY are 100% independent of index `i`,
+  // eliminating any diagonal line artifact while preventing clumps/overlaps on initial frame.
+  const cols = 6;
+  const rows = 5; // 30 cells total for 26 tokens
+  const cellW = (w - 80) / cols;
+  const cellH = (h + 120) / rows;
+
+  const candidateSlots = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      candidateSlots.push({
+        x: 40 + c * cellW + Math.random() * Math.max(10, cellW - 48),
+        y: -60 + r * cellH + Math.random() * Math.max(10, cellH - 48),
+      });
+    }
+  }
+
+  // Fisher-Yates shuffle to randomize slot-to-token assignments on every reload
+  for (let j = candidateSlots.length - 1; j > 0; j--) {
+    const k = Math.floor(Math.random() * (j + 1));
+    [candidateSlots[j], candidateSlots[k]] = [candidateSlots[k], candidateSlots[j]];
+  }
+
   bodies = rainTokens.map((token, i) => {
-    const pct = parseFloat(token.left) / 100;
-    const startX = Math.max(30, Math.min(w - 30, pct * w));
-    // Stagger initial Y from -120 to h * 1.05 so screen is immediately populated
-    const startY = (i / rainTokens.length) * (h * 1.1) - 100 + (Math.random() - 0.5) * 40;
+    const slot = candidateSlots[i] || {
+      x: Math.random() * (w - 80) + 40,
+      y: Math.random() * (h + 100) - 60,
+    };
+
+    const startX = Math.max(25, Math.min(w - 25, slot.x));
+    const startY = slot.y;
 
     const body = Bodies.rectangle(startX, startY, 46, 46, {
       chamfer: { radius: 14 },
