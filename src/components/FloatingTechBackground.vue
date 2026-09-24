@@ -352,30 +352,48 @@ const handlePointerUp = (e) => {
     const numBodies = bodies.length;
     for (let i = 0; i < numBodies; i++) {
       const body = bodies[i];
+      const dx = body.position.x - attractionPos.x;
+      const dy = body.position.y - attractionPos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // Evenly distribute 360-degree angles around the circle with organic jitter
-      const baseAngle = (i / numBodies) * Math.PI * 2;
-      const angle = baseAngle + (Math.random() - 0.5) * 0.28;
+      if (dist <= 50) {
+        // A. Icons at the cursor singularity: explosive 360-degree starburst
+        const baseAngle = (i / numBodies) * Math.PI * 2;
+        const angle = baseAngle + (Math.random() - 0.5) * 0.28;
 
-      // Blast speed: explosive, high-impact fling!
-      const baseBlastSpeed = 22;
-      const blastSpeed = Math.min(baseBlastSpeed * chargePower * (0.9 + Math.random() * 0.25), 40);
+        const baseBlastSpeed = 22;
+        const blastSpeed = Math.min(baseBlastSpeed * chargePower * (0.9 + Math.random() * 0.25), 40);
 
-      // Pre-position outward along launch angle to ensure clean collision resolution
-      const launchOffset = 18 + Math.random() * 12;
-      Body.setPosition(body, {
-        x: attractionPos.x + Math.cos(angle) * launchOffset,
-        y: attractionPos.y + Math.sin(angle) * launchOffset,
-      });
+        // Gentle launch offset outward to ensure clean collision resolution without overlap
+        const launchOffset = 14 + Math.random() * 8;
+        Body.setPosition(body, {
+          x: attractionPos.x + Math.cos(angle) * launchOffset,
+          y: attractionPos.y + Math.sin(angle) * launchOffset,
+        });
 
-      const vx = Math.cos(angle) * blastSpeed;
-      const vy = Math.sin(angle) * blastSpeed;
+        const vx = Math.cos(angle) * blastSpeed;
+        const vy = Math.sin(angle) * blastSpeed;
+        Body.setVelocity(body, { x: vx, y: vy });
 
-      Body.setVelocity(body, { x: vx, y: vy });
+        const spinKick = (Math.random() - 0.5) * (0.35 + chargePower * 0.15);
+        Body.setAngularVelocity(body, spinKick);
+      } else {
+        // B. Icons distant from cursor: ZERO TELEPORTATION! Keep current position intact,
+        // and impart an outward shockwave blast impulse radiating from the cursor.
+        const nx = dx / dist;
+        const ny = dy / dist;
 
-      // Dynamic angular spin on burst
-      const spinKick = (Math.random() - 0.5) * (0.35 + chargePower * 0.15);
-      Body.setAngularVelocity(body, spinKick);
+        const baseBlastSpeed = 22;
+        const shockSpeed = Math.min(baseBlastSpeed * chargePower * (180 / (dist + 100)), 22);
+
+        Body.setVelocity(body, {
+          x: body.velocity.x * 0.4 + nx * shockSpeed + (Math.random() - 0.5) * 2,
+          y: body.velocity.y * 0.4 + ny * shockSpeed + (Math.random() - 0.5) * 2,
+        });
+
+        const spinKick = (Math.random() - 0.5) * 0.25;
+        Body.setAngularVelocity(body, body.angularVelocity + spinKick);
+      }
     }
   } else {
     shockwaveState.value.active = false;
@@ -505,7 +523,7 @@ const initPhysics = () => {
 
       const holdDuration = (now - attractionStart) / 1000;
       // Progressive speed acceleration: starts smoothly and builds swiftly
-      const speedCap = Math.min(12 + holdDuration * 22, 34);
+      const speedCap = Math.min(14 + holdDuration * 24, 38);
 
       for (let i = 0; i < bodies.length; i++) {
         const body = bodies[i];
@@ -513,22 +531,22 @@ const initPhysics = () => {
         const dy = attractionPos.y - body.position.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist <= 30) {
+        if (dist <= 48) {
           // 1. Single Focal Point Convergence & High-Tension Vibration ("mengumpul di 1 titik bergetar")
           const vibIntensity = Math.min(1.2 + holdDuration * 3.2, 5.5);
           const jitterX = (Math.random() - 0.5) * vibIntensity * 2;
           const jitterY = (Math.random() - 0.5) * vibIntensity * 2;
 
-          // Smoothly lock coordinates into the vibrating singularity point
+          // Smoothly lock coordinates into the vibrating singularity point with high responsiveness
           Body.setPosition(body, {
-            x: body.position.x + (attractionPos.x + jitterX - body.position.x) * 0.45,
-            y: body.position.y + (attractionPos.y + jitterY - body.position.y) * 0.45,
+            x: body.position.x + (attractionPos.x + jitterX - body.position.x) * 0.65,
+            y: body.position.y + (attractionPos.y + jitterY - body.position.y) * 0.65,
           });
 
-          // Zero out outward velocities so icons remain tightly gathered
+          // Impart mouse drag momentum so cluster moves with cursor when dragged
           Body.setVelocity(body, {
-            x: (Math.random() - 0.5) * 1.2,
-            y: (Math.random() - 0.5) * 1.2,
+            x: mouseVel.x * 0.35 + (Math.random() - 0.5) * 1.2,
+            y: mouseVel.y * 0.35 + (Math.random() - 0.5) * 1.2,
           });
 
           // High-frequency tremor spin
@@ -539,12 +557,12 @@ const initPhysics = () => {
           const ny = dy / dist;
 
           // Adaptive velocity steering: quickly curves icons toward cursor without orbiting
-          const desiredSpeed = Math.min(speedCap, Math.max(5.5, dist * 0.28));
+          const desiredSpeed = Math.min(speedCap, Math.max(6.5, dist * 0.32));
           const targetVx = nx * desiredSpeed;
           const targetVy = ny * desiredSpeed;
 
           // Exponential critically-damped steering (eliminates violent oscillations or abrupt snapping)
-          const steerFactor = 0.18;
+          const steerFactor = 0.22;
           Body.setVelocity(body, {
             x: body.velocity.x + (targetVx - body.velocity.x) * steerFactor,
             y: body.velocity.y + (targetVy - body.velocity.y) * steerFactor,
