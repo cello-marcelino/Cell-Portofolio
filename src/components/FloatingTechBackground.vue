@@ -279,10 +279,10 @@ const respawnToken = (body, token) => {
   const spawnX = Math.random() * (winW - 80) + 40;
   const spawnY = -60 - Math.random() * 160;
   Body.setPosition(body, { x: spawnX, y: spawnY });
-  // Gentle slow downward floating velocity
+  // Brisk downward floating velocity
   Body.setVelocity(body, {
-    x: (Math.random() - 0.5) * 0.4,
-    y: Math.random() * 0.8 + 0.6,
+    x: (Math.random() - 0.5) * 0.5,
+    y: Math.random() * 1.2 + 0.9,
   });
   Body.setAngle(body, token.targetRad);
   Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.015);
@@ -294,12 +294,12 @@ const initPhysics = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
 
-  // 1. Initialize Matter.js Engine with gentle floating gravity
+  // 1. Initialize Matter.js Engine with accelerated rain gravity
   engine = Engine.create({
     gravity: {
       x: 0,
-      y: 0.08, // Calibrated slow floating rain gravity
-      scale: 0.0006,
+      y: 0.16, // Accelerated gravity for a crisper, more dynamic rain flow
+      scale: 0.0008,
     },
   });
   world = engine.world;
@@ -360,15 +360,15 @@ const initPhysics = () => {
     const body = Bodies.rectangle(startX, startY, 46, 46, {
       chamfer: { radius: 14 },
       restitution: 0.82, // Elastic bounciness on mouse / badge impacts
-      frictionAir: 0.045, // Slow floating terminal velocity
+      frictionAir: 0.0405, // Lowered by 10% (from 0.045 down to 0.0405)
       friction: 0.05,
       density: 0.001,
       angle: token.targetRad,
     });
 
     Body.setVelocity(body, {
-      x: (Math.random() - 0.5) * 0.4,
-      y: Math.random() * 0.8 + 0.6,
+      x: (Math.random() - 0.5) * 0.5,
+      y: Math.random() * 1.2 + 0.9,
     });
 
     return body;
