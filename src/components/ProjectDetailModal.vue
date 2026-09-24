@@ -230,6 +230,7 @@ const prevImage = () => {
                   class="transition-all duration-200 select-none"
                   draggable="false"
                   loading="lazy"
+                  decoding="async"
                 />
 
                 <!-- Top Controls Overlay: Fit / Fill Toggle -->
@@ -282,7 +283,7 @@ const prevImage = () => {
                         : 'border-slate-800 opacity-50 hover:opacity-80'
                     "
                   >
-                    <img :src="img.src" :alt="img.title" class="w-full h-full object-cover" />
+                    <img :src="img.src" :alt="img.title" class="w-full h-full object-cover" loading="lazy" decoding="async" />
                   </button>
                 </div>
               </div>

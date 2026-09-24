@@ -11,8 +11,8 @@ export const personalInfo = {
   instagramHandle: "chrstn_mrclno",
   cvDownloadUrl: "/CV_ChristianMarcelino.pdf",
   bio: "Informatics Engineering student at Politeknik Negeri Batam and junior software engineer. I build reactive web applications, decoupled backend services, and practical applied AI retrieval systems.",
-  brandLogo: "/brand/cell-logo-square.png",
-  photo3x4: "/profile.jpg",
+  brandLogo: "/brand/cell-logo-square.webp",
+  photo3x4: "/profile.webp",
 };
 
 // 1. Exclusive 3 Pillars of Expertise
@@ -110,7 +110,7 @@ export const showcaseProjects = [
     category: "ai",
     categoryLabel: "Applied NLP & IR",
     year: "2024",
-    primaryVisual: "/projects/siredo-api-single-recommendation.png",
+    primaryVisual: "/projects/siredo-api-single-recommendation.webp",
     architecture: "Decoupled (Flask API + Vue 3 SPA + SQLite/MySQL)",
     repoUrl: "https://github.com/cello-marcelino/Sistem-Rekomendasi-Dosen",
     techStack: ["Python", "Flask", "Sentence-BERT", "KeyBERT", "BM25Okapi", "Vue 3", "Tailwind CSS"],
@@ -121,11 +121,11 @@ export const showcaseProjects = [
       whatILearned: "How to connect a Python recommendation backend with a Vue frontend and present match results clearly.",
     },
     screenshots: [
-      { title: "Recommendation Results", src: "/projects/siredo-api-single-recommendation.png", caption: "Similarity scores and explainable keyword tag outputs." },
-      { title: "Search & Proposal Submission", src: "/projects/siredo-api-landing-page.png", caption: "Form interface for student thesis submission." },
-      { title: "Admin Management Dashboard", src: "/projects/siredo-admin-dashboard.png", caption: "Lecturer quota, expertise area, and review console." },
-      { title: "API Documentation", src: "/projects/siredo-api-dokumentasi.png", caption: "RESTful specification and endpoint payload schemas." },
-      { title: "Staff Login Portal", src: "/projects/siredo-admin-login.png", caption: "Session-authenticated administrator portal." },
+      { title: "Recommendation Results", src: "/projects/siredo-api-single-recommendation.webp", caption: "Similarity scores and explainable keyword tag outputs." },
+      { title: "Search & Proposal Submission", src: "/projects/siredo-api-landing-page.webp", caption: "Form interface for student thesis submission." },
+      { title: "Admin Management Dashboard", src: "/projects/siredo-admin-dashboard.webp", caption: "Lecturer quota, expertise area, and review console." },
+      { title: "API Documentation", src: "/projects/siredo-api-dokumentasi.webp", caption: "RESTful specification and endpoint payload schemas." },
+      { title: "Staff Login Portal", src: "/projects/siredo-admin-login.webp", caption: "Session-authenticated administrator portal." },
     ],
   },
   {
@@ -137,7 +137,7 @@ export const showcaseProjects = [
     category: "web",
     categoryLabel: "Fullstack E-Commerce",
     year: "2024",
-    primaryVisual: "/projects/manies-cakery-landing-page.png",
+    primaryVisual: "/projects/manies-cakery-landing-page.webp",
     architecture: "Laravel 13 + Livewire 4 + MySQL + Tailwind CSS",
     repoUrl: "https://github.com/cello-marcelino/manies-cakery",
     techStack: ["PHP", "Laravel 13", "Livewire 4", "MySQL", "Tailwind CSS", "Vite"],
@@ -148,9 +148,9 @@ export const showcaseProjects = [
       whatILearned: "Managing reactive cart state and ensuring orders are safely recorded in a relational database.",
     },
     screenshots: [
-      { title: "Storefront & Catalog", src: "/projects/manies-cakery-landing-page.png", caption: "Product catalog with real-time category filtering." },
-      { title: "Admin Order Dashboard", src: "/projects/manies-cakery-admin-dashboard.png", caption: "Order review console and monthly sales breakdown." },
-      { title: "Authentication Gateway", src: "/projects/manies-cakery-login.png", caption: "Multi-role customer and administrator authentication." },
+      { title: "Storefront & Catalog", src: "/projects/manies-cakery-landing-page.webp", caption: "Product catalog with real-time category filtering." },
+      { title: "Admin Order Dashboard", src: "/projects/manies-cakery-admin-dashboard.webp", caption: "Order review console and monthly sales breakdown." },
+      { title: "Authentication Gateway", src: "/projects/manies-cakery-login.webp", caption: "Multi-role customer and administrator authentication." },
     ],
   },
   {
@@ -162,7 +162,7 @@ export const showcaseProjects = [
     category: "ai",
     categoryLabel: "Local AI Runtime",
     year: "2024",
-    primaryVisual: "/projects/mini-llm-chat.png",
+    primaryVisual: "/projects/mini-llm-chat.webp",
     architecture: "FastAPI + Local Model Engine + Pydantic",
     repoUrl: "https://github.com/cello-marcelino/mini-llm-local",
     techStack: ["Python", "FastAPI", "Local LLM", "Pydantic", "Uvicorn"],
@@ -173,8 +173,8 @@ export const showcaseProjects = [
       whatILearned: "Practical experience running AI models locally and handling streaming responses through an API.",
     },
     screenshots: [
-      { title: "Interactive Chat Interface", src: "/projects/mini-llm-chat.png", caption: "Chat interface testing local prompt inference." },
-      { title: "Service Overview", src: "/projects/mini-llm-landing-page.png", caption: "FastAPI endpoint overview and model status." },
+      { title: "Interactive Chat Interface", src: "/projects/mini-llm-chat.webp", caption: "Chat interface testing local prompt inference." },
+      { title: "Service Overview", src: "/projects/mini-llm-landing-page.webp", caption: "FastAPI endpoint overview and model status." },
     ],
   },
   {
@@ -186,7 +186,7 @@ export const showcaseProjects = [
     category: "web",
     categoryLabel: "Native Runtime",
     year: "2024",
-    primaryVisual: "/projects/web-spp-admin-dashboard.png",
+    primaryVisual: "/projects/web-spp-admin-dashboard.webp",
     architecture: "Native Node.js (No Express) + SQLite3 + Chart.js",
     repoUrl: "https://github.com/cello-marcelino/web-spp-refactored",
     techStack: ["Native Node.js", "SQLite3", "Bcrypt", "Chart.js", "CSS"],
@@ -197,8 +197,8 @@ export const showcaseProjects = [
       whatILearned: "How core HTTP servers work under the hood and how to write secure database queries without an ORM.",
     },
     screenshots: [
-      { title: "Admin Analytics Dashboard", src: "/projects/web-spp-admin-dashboard.png", caption: "Monthly tuition trends visualized with Chart.js." },
-      { title: "Session Login Screen", src: "/projects/web-spp-login.png", caption: "Role-based authentication gateway." },
+      { title: "Admin Analytics Dashboard", src: "/projects/web-spp-admin-dashboard.webp", caption: "Monthly tuition trends visualized with Chart.js." },
+      { title: "Session Login Screen", src: "/projects/web-spp-login.webp", caption: "Role-based authentication gateway." },
     ],
   },
   {
@@ -210,7 +210,7 @@ export const showcaseProjects = [
     category: "ai",
     categoryLabel: "ML Evaluation",
     year: "2023",
-    primaryVisual: "/projects/ml-dashboard-model-analysis.png",
+    primaryVisual: "/projects/ml-dashboard-model-analysis.webp",
     architecture: "Python + Streamlit + Scikit-learn + TensorFlow",
     repoUrl: "https://github.com/cello-marcelino",
     techStack: ["Python", "Streamlit", "Scikit-learn", "TensorFlow", "Pandas"],
@@ -221,8 +221,8 @@ export const showcaseProjects = [
       whatILearned: "Evaluating model accuracy and building straightforward analytical dashboards for machine learning experiments.",
     },
     screenshots: [
-      { title: "Model Performance Analysis", src: "/projects/ml-dashboard-model-analysis.png", caption: "Comparative ROC/AUC curves and metrics." },
-      { title: "Data Exploration Console", src: "/projects/ml-dashboard-overview.png", caption: "Feature correlation matrices and distributions." },
+      { title: "Model Performance Analysis", src: "/projects/ml-dashboard-model-analysis.webp", caption: "Comparative ROC/AUC curves and metrics." },
+      { title: "Data Exploration Console", src: "/projects/ml-dashboard-overview.webp", caption: "Feature correlation matrices and distributions." },
     ],
   },
   {
@@ -234,7 +234,7 @@ export const showcaseProjects = [
     category: "web",
     categoryLabel: "Web Fundamentals",
     year: "2023",
-    primaryVisual: "/projects/miawoof-petshop-landing-page.png",
+    primaryVisual: "/projects/miawoof-petshop-landing-page.webp",
     architecture: "Native Node.js + SQLite3 + Formidable",
     repoUrl: "https://github.com/cello-marcelino/miawoof-petshop",
     techStack: ["Native Node.js", "SQLite3", "Formidable", "Layered Architecture"],
@@ -245,9 +245,9 @@ export const showcaseProjects = [
       whatILearned: "Foundational practice creating CRUD operations and managing database records in SQLite.",
     },
     screenshots: [
-      { title: "Storefront & Service Catalog", src: "/projects/miawoof-petshop-landing-page.png", caption: "Pet grooming catalog and service descriptions." },
-      { title: "Appointment Management", src: "/projects/miawoof-petshop-admin-dashboard.png", caption: "Staff schedule review and booking records." },
-      { title: "Staff Login Portal", src: "/projects/miawoof-petshop-login.png", caption: "Administrative login interface." },
+      { title: "Storefront & Service Catalog", src: "/projects/miawoof-petshop-landing-page.webp", caption: "Pet grooming catalog and service descriptions." },
+      { title: "Appointment Management", src: "/projects/miawoof-petshop-admin-dashboard.webp", caption: "Staff schedule review and booking records." },
+      { title: "Staff Login Portal", src: "/projects/miawoof-petshop-login.webp", caption: "Administrative login interface." },
     ],
   },
 ];
@@ -320,8 +320,3 @@ export const gitTimelineNodes = [
     theme: "teal",
   },
 ];
-
-// Backward Compatibility Aliases for components
-export const featuredProjects = showcaseProjects.slice(0, 2);
-export const projectsAndExperiments = showcaseProjects.slice(2);
-export const techEcosystem = toolchainCategories.flatMap((c) => c.items);
