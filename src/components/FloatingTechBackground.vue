@@ -327,6 +327,7 @@ const handlePointerUp = (e) => {
 
   isAttracting = false;
   activePointerId = null;
+  if (engine) engine.gravity.y = 0.16;
 
   // Release accumulated energy as an explosive repulsion shockwave
   if (holdDuration >= 0.06) {
@@ -501,9 +502,11 @@ const initPhysics = () => {
 
     // A. Dynamic Gravity Attraction Vortex (when pointer is pressed on empty area)
     if (isAttracting) {
+      engine.gravity.y = 0; // Suspend rain gravity so icons don't fall down during attraction!
+
       const holdDuration = (now - attractionStart) / 1000;
-      // Multiplier ramps up smoothly from 1.0 to 3.5 based on hold time
-      const timeMultiplier = Math.min(1.0 + holdDuration * 1.5, 3.5);
+      // Multiplier ramps up quickly from 1.2 to 4.5 based on hold time
+      const timeMultiplier = Math.min(1.2 + holdDuration * 2.2, 4.5);
 
       for (let i = 0; i < bodies.length; i++) {
         const body = bodies[i];
@@ -511,15 +514,18 @@ const initPhysics = () => {
         const dy = attractionPos.y - body.position.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist > 12) {
+        if (dist > 8) {
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Pull force: stronger when closer, with gentle inverse-root scaling
-          const pullMagnitude = (0.00032 / Math.sqrt(dist + 20)) * timeMultiplier;
+          // Pull force: calibrated to body mass (~2.1 kg)
+          // Far away: strong persistent pull inward
+          // Closer: accelerates inward smoothly and decisively
+          const basePull = Math.min(0.045 + (350 / (dist + 50)) * 0.09, 0.40);
+          const pullMagnitude = basePull * timeMultiplier;
 
-          // Tangential swirl component for organic vortex motion
-          const swirlFactor = pullMagnitude * 0.22;
+          // Subtle tangential swirl component for organic vortex motion
+          const swirlFactor = pullMagnitude * 0.16;
           const swirlX = -ny * swirlFactor;
           const swirlY = nx * swirlFactor;
 
@@ -528,45 +534,60 @@ const initPhysics = () => {
 
           Body.applyForce(body, body.position, { x: fx, y: fy });
 
+          // Center convergence dampening: when icons reach the cursor cluster,
+          // damp velocity so they gather and stay tightly grouped around the cursor!
+          if (dist < 110) {
+            body.velocity.x *= 0.91;
+            body.velocity.y *= 0.91;
+          }
+          if (dist < 50) {
+            body.velocity.x *= 0.82;
+            body.velocity.y *= 0.82;
+          }
+
           // Gentle angular spin matching vortex direction
-          Body.setAngularVelocity(body, body.angularVelocity * 0.98 + 0.008);
+          Body.setAngularVelocity(body, body.angularVelocity * 0.96 + (Math.random() - 0.5) * 0.02);
         }
       }
-    } else if (isMouseActive) {
-      // B. Passive Mouse Deflection Physics (when cursor merely moves without click)
-      const speedSq = mouseVel.x * mouseVel.x + mouseVel.y * mouseVel.y;
-      const swipeSpeed = Math.min(Math.sqrt(speedSq), 2200);
+    } else {
+      engine.gravity.y = 0.16; // Restore normal rain gravity
 
-      for (let i = 0; i < bodies.length; i++) {
-        const body = bodies[i];
-        const dx = body.position.x - mousePos.x;
-        const dy = body.position.y - mousePos.y;
-        const distSq = dx * dx + dy * dy;
+      if (isMouseActive) {
+        // B. Passive Mouse Deflection Physics (when cursor merely moves without click)
+        const speedSq = mouseVel.x * mouseVel.x + mouseVel.y * mouseVel.y;
+        const swipeSpeed = Math.min(Math.sqrt(speedSq), 2200);
 
-        if (distSq < mouseRadiusSq && distSq > 1) {
-          const dist = Math.sqrt(distSq);
-          const nx = dx / dist;
-          const ny = dy / dist;
+        for (let i = 0; i < bodies.length; i++) {
+          const body = bodies[i];
+          const dx = body.position.x - mousePos.x;
+          const dy = body.position.y - mousePos.y;
+          const distSq = dx * dx + dy * dy;
 
-          // Proximity factor (1.0 at cursor tip, 0.0 at radius edge)
-          const proximity = 1 - dist / mouseRadius;
+          if (distSq < mouseRadiusSq && distSq > 1) {
+            const dist = Math.sqrt(distSq);
+            const nx = dx / dist;
+            const ny = dy / dist;
 
-          // Radial push force
-          const pushMagnitude = proximity * 0.0042;
+            // Proximity factor (1.0 at cursor tip, 0.0 at radius edge)
+            const proximity = 1 - dist / mouseRadius;
 
-          // Swipe momentum impulse
-          const swipeMagnitude = (swipeSpeed / 1000) * proximity * 0.0075;
-          const swipeDirX = swipeSpeed > 15 ? mouseVel.x / swipeSpeed : nx;
-          const swipeDirY = swipeSpeed > 15 ? mouseVel.y / swipeSpeed : ny;
+            // Radial push force
+            const pushMagnitude = proximity * 0.0042;
 
-          const fx = nx * pushMagnitude + swipeDirX * swipeMagnitude;
-          const fy = ny * pushMagnitude + swipeDirY * swipeMagnitude;
+            // Swipe momentum impulse
+            const swipeMagnitude = (swipeSpeed / 1000) * proximity * 0.0075;
+            const swipeDirX = swipeSpeed > 15 ? mouseVel.x / swipeSpeed : nx;
+            const swipeDirY = swipeSpeed > 15 ? mouseVel.y / swipeSpeed : ny;
 
-          Body.applyForce(body, body.position, { x: fx, y: fy });
+            const fx = nx * pushMagnitude + swipeDirX * swipeMagnitude;
+            const fy = ny * pushMagnitude + swipeDirY * swipeMagnitude;
 
-          // Impart subtle organic spin on impact
-          const torque = (dx * swipeDirY - dy * swipeDirX) * 0.00018;
-          Body.setAngularVelocity(body, body.angularVelocity + torque);
+            Body.applyForce(body, body.position, { x: fx, y: fy });
+
+            // Impart subtle organic spin on impact
+            const torque = (dx * swipeDirY - dy * swipeDirX) * 0.00018;
+            Body.setAngularVelocity(body, body.angularVelocity + torque);
+          }
         }
       }
     }
@@ -580,8 +601,8 @@ const initPhysics = () => {
       const body = bodies[i];
       const token = rainTokens[i];
 
-      // Respawn when falling past bottom floor
-      if (body.position.y > floorLimit) {
+      // Respawn when falling past bottom floor (only when not attracting)
+      if (!isAttracting && body.position.y > floorLimit) {
         respawnToken(body, token);
       }
 
