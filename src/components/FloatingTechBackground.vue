@@ -212,12 +212,13 @@ const rawRainTokens = [
 const rainTokens = rawRainTokens.map((token, idx) => ({
   id: `token-${idx}`,
   ...token,
+  seed: idx * 1.37,
+  targetRad: (token.tilt * Math.PI) / 180,
   icon: resolveIcon(token.icon),
 }));
 
 // DOM element references
 const tokenEls = ref([]);
-const activeBodyIndex = ref(-1);
 
 // Physics Engine variables
 let engine = null;
@@ -228,97 +229,63 @@ let rightWall = null;
 let ceiling = null;
 let animationFrameId = null;
 
-// Interaction tracking
-let activePointerId = null;
-let grabbedBody = null;
-let dragOffset = { x: 0, y: 0 };
-let pointerHistory = [];
-
-const handlePointerDown = (e, idx) => {
-  if (activePointerId !== null) return;
-  activePointerId = e.pointerId;
-
-  if (e.currentTarget?.setPointerCapture) {
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {
-      // safe fallback if capture unsupported
-    }
-  }
-
-  activeBodyIndex.value = idx;
-  grabbedBody = bodies[idx];
-
-  if (grabbedBody) {
-    dragOffset = {
-      x: e.clientX - grabbedBody.position.x,
-      y: e.clientY - grabbedBody.position.y,
-    };
-    Body.setVelocity(grabbedBody, { x: 0, y: 0 });
-    Body.setAngularVelocity(grabbedBody, 0);
-  }
-
-  pointerHistory = [{ x: e.clientX, y: e.clientY, time: performance.now() }];
-};
+// Passive mouse deflection tracking
+let mousePos = { x: -9999, y: -9999 };
+let mouseVel = { x: 0, y: 0 };
+let lastMousePos = { x: -9999, y: -9999 };
+let lastMouseTime = performance.now();
+let isMouseActive = false;
+let mouseDecayTimeout = null;
 
 const handlePointerMove = (e) => {
-  if (!grabbedBody || e.pointerId !== activePointerId) return;
-
-  const targetX = e.clientX - dragOffset.x;
-  const targetY = e.clientY - dragOffset.y;
-
   const now = performance.now();
-  pointerHistory.push({ x: e.clientX, y: e.clientY, time: now });
-  if (pointerHistory.length > 5) {
-    pointerHistory.shift();
+  const dt = Math.max((now - lastMouseTime) / 1000, 0.008);
+
+  if (isMouseActive && lastMousePos.x > -1000) {
+    const rawVx = (e.clientX - lastMousePos.x) / dt;
+    const rawVy = (e.clientY - lastMousePos.y) / dt;
+    // Exponential smoothing for steady momentum transfer
+    mouseVel.x = mouseVel.x * 0.25 + rawVx * 0.75;
+    mouseVel.y = mouseVel.y * 0.25 + rawVy * 0.75;
+  } else {
+    mouseVel.x = 0;
+    mouseVel.y = 0;
   }
 
-  Body.setPosition(grabbedBody, { x: targetX, y: targetY });
-  Body.setVelocity(grabbedBody, { x: 0, y: 0 });
+  mousePos.x = e.clientX;
+  mousePos.y = e.clientY;
+  lastMousePos.x = e.clientX;
+  lastMousePos.y = e.clientY;
+  lastMouseTime = now;
+  isMouseActive = true;
+
+  if (mouseDecayTimeout) clearTimeout(mouseDecayTimeout);
+  mouseDecayTimeout = setTimeout(() => {
+    mouseVel.x = 0;
+    mouseVel.y = 0;
+  }, 100);
 };
 
-const handlePointerUp = (e) => {
-  if (!grabbedBody || e.pointerId !== activePointerId) return;
-
-  // Compute release velocity vector
-  let vx = 0;
-  let vy = 0;
-  if (pointerHistory.length >= 2) {
-    const oldest = pointerHistory[0];
-    const newest = pointerHistory[pointerHistory.length - 1];
-    const dt = (newest.time - oldest.time) / 1000;
-    if (dt > 0.005) {
-      vx = (newest.x - oldest.x) / (dt * 60);
-      vy = (newest.y - oldest.y) / (dt * 60);
-    }
-  }
-
-  // Smooth physical limit clamp
-  const maxV = 32;
-  vx = Math.max(-maxV, Math.min(maxV, vx * 1.15));
-  vy = Math.max(-maxV, Math.min(maxV, vy * 1.15));
-
-  Body.setVelocity(grabbedBody, { x: vx, y: vy });
-
-  // Impart realistic spin proportional to horizontal throw velocity + slight organic kick
-  const angularSpin = vx * 0.008 + (Math.random() - 0.5) * 0.08;
-  Body.setAngularVelocity(grabbedBody, angularSpin);
-
-  grabbedBody = null;
-  activeBodyIndex.value = -1;
-  activePointerId = null;
+const handlePointerLeave = () => {
+  isMouseActive = false;
+  mousePos.x = -9999;
+  mousePos.y = -9999;
+  mouseVel.x = 0;
+  mouseVel.y = 0;
 };
 
-const respawnToken = (body) => {
+const respawnToken = (body, token) => {
   const winW = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const spawnX = Math.random() * (winW - 80) + 40;
-  const spawnY = -60 - Math.random() * 180;
+  const spawnY = -60 - Math.random() * 160;
   Body.setPosition(body, { x: spawnX, y: spawnY });
+  // Gentle slow downward floating velocity
   Body.setVelocity(body, {
-    x: (Math.random() - 0.5) * 1.2,
-    y: Math.random() * 2 + 1.2,
+    x: (Math.random() - 0.5) * 0.4,
+    y: Math.random() * 0.8 + 0.6,
   });
-  Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.04);
+  Body.setAngle(body, token.targetRad);
+  Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.015);
 };
 
 const initPhysics = () => {
@@ -327,18 +294,18 @@ const initPhysics = () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
 
-  // 1. Initialize Matter.js Engine with gentle rain gravity
+  // 1. Initialize Matter.js Engine with gentle floating gravity
   engine = Engine.create({
     gravity: {
       x: 0,
-      y: 0.35,
-      scale: 0.001,
+      y: 0.08, // Calibrated slow floating rain gravity
+      scale: 0.0006,
     },
   });
   world = engine.world;
 
   // 2. Invisible boundary walls (Left, Right, Ceiling)
-  const wallThickness = 60;
+  const wallThickness = 80;
   leftWall = Bodies.rectangle(-wallThickness / 2, h / 2, wallThickness, h * 3, {
     isStatic: true,
     restitution: 0.85,
@@ -357,25 +324,25 @@ const initPhysics = () => {
 
   Composite.add(world, [leftWall, rightWall, ceiling]);
 
-  // 3. Create 26 rigid body badges with rounded corners
+  // 3. Create 26 rigid body badges with floaty air resistance
   bodies = rainTokens.map((token, i) => {
     const pct = parseFloat(token.left) / 100;
     const startX = Math.max(30, Math.min(w - 30, pct * w));
-    // Stagger initial Y from -120 to h * 0.95 so rain starts distributed
-    const startY = (i / rainTokens.length) * (h * 1.05) - 100 + (Math.random() - 0.5) * 50;
+    // Stagger initial Y from -120 to h * 1.05 so screen is immediately populated
+    const startY = (i / rainTokens.length) * (h * 1.1) - 100 + (Math.random() - 0.5) * 40;
 
     const body = Bodies.rectangle(startX, startY, 46, 46, {
       chamfer: { radius: 14 },
-      restitution: 0.78, // Bouncy elastic collisions
-      frictionAir: 0.015,
-      friction: 0.08,
-      density: 0.002,
-      angle: (token.tilt * Math.PI) / 180,
+      restitution: 0.82, // Elastic bounciness on mouse / badge impacts
+      frictionAir: 0.045, // Slow floating terminal velocity
+      friction: 0.05,
+      density: 0.001,
+      angle: token.targetRad,
     });
 
     Body.setVelocity(body, {
-      x: (Math.random() - 0.5) * 0.8,
-      y: Math.random() * 2 + 1,
+      x: (Math.random() - 0.5) * 0.4,
+      y: Math.random() * 0.8 + 0.6,
     });
 
     return body;
@@ -389,23 +356,75 @@ const initPhysics = () => {
     img.src = token.icon;
   });
 
-  // 5. High performance 60 FPS requestAnimationFrame render loop
+  // 5. 60 FPS requestAnimationFrame render loop with passive mouse deflection
+  const mouseRadius = 85;
+  const mouseRadiusSq = mouseRadius * mouseRadius;
   let lastTime = performance.now();
+
   const updateLoop = (now) => {
     const delta = Math.min(now - lastTime, 33.33);
     lastTime = now;
 
+    // Passive Mouse Deflection Physics (No click/hold required)
+    if (isMouseActive) {
+      const speedSq = mouseVel.x * mouseVel.x + mouseVel.y * mouseVel.y;
+      const swipeSpeed = Math.min(Math.sqrt(speedSq), 2200);
+
+      for (let i = 0; i < bodies.length; i++) {
+        const body = bodies[i];
+        const dx = body.position.x - mousePos.x;
+        const dy = body.position.y - mousePos.y;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq < mouseRadiusSq && distSq > 1) {
+          const dist = Math.sqrt(distSq);
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          // Proximity factor (1.0 at cursor tip, 0.0 at radius edge)
+          const proximity = 1 - dist / mouseRadius;
+
+          // Radial push force
+          const pushMagnitude = proximity * 0.0042;
+
+          // Swipe momentum impulse
+          const swipeMagnitude = (swipeSpeed / 1000) * proximity * 0.0075;
+          const swipeDirX = swipeSpeed > 15 ? mouseVel.x / swipeSpeed : nx;
+          const swipeDirY = swipeSpeed > 15 ? mouseVel.y / swipeSpeed : ny;
+
+          const fx = nx * pushMagnitude + swipeDirX * swipeMagnitude;
+          const fy = ny * pushMagnitude + swipeDirY * swipeMagnitude;
+
+          Body.applyForce(body, body.position, { x: fx, y: fy });
+
+          // Impart subtle organic spin on impact
+          const torque = (dx * swipeDirY - dy * swipeDirX) * 0.00018;
+          Body.setAngularVelocity(body, body.angularVelocity + torque);
+        }
+      }
+    }
+
+    // Step physics engine
     Engine.update(engine, delta);
 
     const floorLimit = window.innerHeight + 80;
 
     for (let i = 0; i < bodies.length; i++) {
       const body = bodies[i];
+      const token = rainTokens[i];
 
       // Respawn when falling past bottom floor
-      if (body !== grabbedBody && body.position.y > floorLimit) {
-        respawnToken(body);
+      if (body.position.y > floorLimit) {
+        respawnToken(body, token);
       }
+
+      // Gentle tilt stabilization spring (gradually restores aesthetic organic angle)
+      const angleDiff = token.targetRad - body.angle;
+      body.torque += angleDiff * 0.00035;
+      body.angularVelocity *= 0.985;
+
+      // Subtle ambient micro-sway for floating feel
+      body.force.x += Math.sin(now * 0.001 + token.seed) * 0.000035;
 
       // Sync position directly to DOM element style (60 FPS, bypasses Vue reactive VDOM)
       const el = tokenEls.value[i];
@@ -426,7 +445,7 @@ const handleResize = () => {
   if (!world || typeof window === 'undefined') return;
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const wallThickness = 60;
+  const wallThickness = 80;
 
   if (leftWall) Body.setPosition(leftWall, { x: -wallThickness / 2, y: h / 2 });
   if (rightWall) Body.setPosition(rightWall, { x: w + wallThickness / 2, y: h / 2 });
@@ -436,16 +455,15 @@ const handleResize = () => {
 onMounted(() => {
   initPhysics();
   window.addEventListener('pointermove', handlePointerMove, { passive: true });
-  window.addEventListener('pointerup', handlePointerUp, { passive: true });
-  window.addEventListener('pointercancel', handlePointerUp, { passive: true });
+  window.addEventListener('pointerleave', handlePointerLeave, { passive: true });
   window.addEventListener('resize', handleResize, { passive: true });
 });
 
 onUnmounted(() => {
   if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  if (mouseDecayTimeout) clearTimeout(mouseDecayTimeout);
   window.removeEventListener('pointermove', handlePointerMove);
-  window.removeEventListener('pointerup', handlePointerUp);
-  window.removeEventListener('pointercancel', handlePointerUp);
+  window.removeEventListener('pointerleave', handlePointerLeave);
   window.removeEventListener('resize', handleResize);
 
   if (engine) {
@@ -457,24 +475,18 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="fixed inset-0 pointer-events-none z-20 overflow-hidden select-none"
+    class="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
     aria-hidden="true"
   >
-    <!-- Physics-driven interactive falling tech badges -->
+    <!-- Physics-driven passive floating rain tech badges -->
     <div
       v-for="(item, idx) in rainTokens"
       :key="item.id"
       :ref="(el) => { if (el) tokenEls[idx] = el; }"
-      class="absolute top-0 left-0 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/95 backdrop-blur-[2px] border border-slate-200/90 shadow-sm flex items-center justify-center p-2 select-none cursor-grab active:cursor-grabbing will-change-transform pointer-events-auto touch-none transition-shadow duration-150"
-      :class="[
-        activeBodyIndex === idx
-          ? 'scale-110 shadow-lg ring-2 ring-teal-500/40 z-30 opacity-100'
-          : 'hover:scale-105 hover:shadow-md hover:border-teal-400/80 hover:opacity-100',
-      ]"
+      class="absolute top-0 left-0 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/95 backdrop-blur-[2px] border border-slate-200/90 shadow-sm flex items-center justify-center p-2 select-none will-change-transform pointer-events-none transition-shadow duration-200"
       :style="{
-        opacity: activeBodyIndex === idx ? 1 : item.opacity,
+        opacity: item.opacity,
       }"
-      @pointerdown="handlePointerDown($event, idx)"
     >
       <img
         :src="item.icon"
