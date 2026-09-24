@@ -271,6 +271,11 @@ const handlePointerDown = (e) => {
   attractionPos.y = e.clientY;
   activePointerId = e.pointerId;
 
+  // Temporarily disable collision between badges so all 26 icons can converge into 1 single focal point!
+  bodies.forEach((b) => {
+    b.collisionFilter.group = -1;
+  });
+
   shockwaveState.value = {
     active: true,
     x: e.clientX,
@@ -323,59 +328,53 @@ const handlePointerUp = (e) => {
 
   const now = performance.now();
   const holdDuration = (now - attractionStart) / 1000; // in seconds
-  const releasePoint = { ...attractionPos };
 
   isAttracting = false;
   activePointerId = null;
-  if (engine) engine.gravity.y = 0.16;
 
-  // Release accumulated energy as an explosive repulsion shockwave
-  if (holdDuration >= 0.06) {
+  // Restore rain gravity and re-enable collisions between badges
+  if (engine) engine.gravity.y = 0.16;
+  bodies.forEach((b) => {
+    b.collisionFilter.group = 0;
+  });
+
+  // Release accumulated energy as an explosive 360-degree repulsion shockwave
+  if (holdDuration >= 0.05) {
     shockwaveState.value.exploding = true;
     setTimeout(() => {
       shockwaveState.value.active = false;
       shockwaveState.value.exploding = false;
     }, 450);
 
-    // Charge power multiplier: grows with hold duration (capped between 0.45 and 3.2)
-    const chargePower = Math.min(Math.max((holdDuration - 0.04) * 1.8, 0.45), 3.2);
+    // Charge power multiplier: builds up smoothly with hold duration
+    const chargePower = Math.min(Math.max((holdDuration - 0.03) * 2.4, 0.7), 3.6);
 
-    for (let i = 0; i < bodies.length; i++) {
+    const numBodies = bodies.length;
+    for (let i = 0; i < numBodies; i++) {
       const body = bodies[i];
-      const dx = body.position.x - releasePoint.x;
-      const dy = body.position.y - releasePoint.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // Base angle radiating outward from cursor
-      let angle = dist > 4 ? Math.atan2(dy, dx) : Math.random() * Math.PI * 2;
-      // Add subtle organic angular jitter (+- 12 deg)
-      angle += (Math.random() - 0.5) * 0.42;
+      // Evenly distribute 360-degree angles around the circle with organic jitter
+      const baseAngle = (i / numBodies) * Math.PI * 2;
+      const angle = baseAngle + (Math.random() - 0.5) * 0.28;
 
-      // Distance factor: closer icons receive stronger blast
-      const distFactor = Math.min(Math.max(380 / (dist + 90), 0.35), 2.8);
+      // Blast speed: explosive, high-impact fling!
+      const baseBlastSpeed = 22;
+      const blastSpeed = Math.min(baseBlastSpeed * chargePower * (0.9 + Math.random() * 0.25), 40);
 
-      // Magnitude jitter (+- 15%)
-      const magJitter = 0.85 + Math.random() * 0.3;
-
-      // Base blast speed
-      const baseBlast = 10.5;
-      const blastSpeed = baseBlast * chargePower * distFactor * magJitter;
-
-      // Clamp to safe physical maximum to prevent wall tunneling
-      const maxSpeed = 28;
-      const finalSpeed = Math.min(blastSpeed, maxSpeed);
-
-      const vx = Math.cos(angle) * finalSpeed;
-      const vy = Math.sin(angle) * finalSpeed;
-
-      // Apply blast velocity
-      Body.setVelocity(body, {
-        x: body.velocity.x * 0.3 + vx,
-        y: body.velocity.y * 0.3 + vy,
+      // Pre-position outward along launch angle to ensure clean collision resolution
+      const launchOffset = 18 + Math.random() * 12;
+      Body.setPosition(body, {
+        x: attractionPos.x + Math.cos(angle) * launchOffset,
+        y: attractionPos.y + Math.sin(angle) * launchOffset,
       });
 
-      // Impart dynamic angular spin
-      const spinKick = (Math.random() - 0.5) * 0.28 * Math.min(chargePower, 2.0);
+      const vx = Math.cos(angle) * blastSpeed;
+      const vy = Math.sin(angle) * blastSpeed;
+
+      Body.setVelocity(body, { x: vx, y: vy });
+
+      // Dynamic angular spin on burst
+      const spinKick = (Math.random() - 0.5) * (0.35 + chargePower * 0.15);
       Body.setAngularVelocity(body, spinKick);
     }
   } else {
@@ -505,8 +504,8 @@ const initPhysics = () => {
       engine.gravity.y = 0; // Suspend rain gravity so icons don't fall down during attraction!
 
       const holdDuration = (now - attractionStart) / 1000;
-      // Multiplier ramps up quickly from 1.2 to 4.5 based on hold time
-      const timeMultiplier = Math.min(1.2 + holdDuration * 2.2, 4.5);
+      // Progressive speed acceleration: starts smoothly and builds swiftly
+      const speedCap = Math.min(12 + holdDuration * 22, 34);
 
       for (let i = 0; i < bodies.length; i++) {
         const body = bodies[i];
@@ -514,39 +513,45 @@ const initPhysics = () => {
         const dy = attractionPos.y - body.position.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist > 8) {
+        if (dist <= 30) {
+          // 1. Single Focal Point Convergence & High-Tension Vibration ("mengumpul di 1 titik bergetar")
+          const vibIntensity = Math.min(1.2 + holdDuration * 3.2, 5.5);
+          const jitterX = (Math.random() - 0.5) * vibIntensity * 2;
+          const jitterY = (Math.random() - 0.5) * vibIntensity * 2;
+
+          // Smoothly lock coordinates into the vibrating singularity point
+          Body.setPosition(body, {
+            x: body.position.x + (attractionPos.x + jitterX - body.position.x) * 0.45,
+            y: body.position.y + (attractionPos.y + jitterY - body.position.y) * 0.45,
+          });
+
+          // Zero out outward velocities so icons remain tightly gathered
+          Body.setVelocity(body, {
+            x: (Math.random() - 0.5) * 1.2,
+            y: (Math.random() - 0.5) * 1.2,
+          });
+
+          // High-frequency tremor spin
+          Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.16);
+        } else {
+          // 2. Smooth, Rapid Progressive Pull towards Cursor ("ditarik secara perlahan cepat tapi halus")
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // Pull force: calibrated to body mass (~2.1 kg)
-          // Far away: strong persistent pull inward
-          // Closer: accelerates inward smoothly and decisively
-          const basePull = Math.min(0.045 + (350 / (dist + 50)) * 0.09, 0.40);
-          const pullMagnitude = basePull * timeMultiplier;
+          // Adaptive velocity steering: quickly curves icons toward cursor without orbiting
+          const desiredSpeed = Math.min(speedCap, Math.max(5.5, dist * 0.28));
+          const targetVx = nx * desiredSpeed;
+          const targetVy = ny * desiredSpeed;
 
-          // Subtle tangential swirl component for organic vortex motion
-          const swirlFactor = pullMagnitude * 0.16;
-          const swirlX = -ny * swirlFactor;
-          const swirlY = nx * swirlFactor;
+          // Exponential critically-damped steering (eliminates violent oscillations or abrupt snapping)
+          const steerFactor = 0.18;
+          Body.setVelocity(body, {
+            x: body.velocity.x + (targetVx - body.velocity.x) * steerFactor,
+            y: body.velocity.y + (targetVy - body.velocity.y) * steerFactor,
+          });
 
-          const fx = nx * pullMagnitude + swirlX;
-          const fy = ny * pullMagnitude + swirlY;
-
-          Body.applyForce(body, body.position, { x: fx, y: fy });
-
-          // Center convergence dampening: when icons reach the cursor cluster,
-          // damp velocity so they gather and stay tightly grouped around the cursor!
-          if (dist < 110) {
-            body.velocity.x *= 0.91;
-            body.velocity.y *= 0.91;
-          }
-          if (dist < 50) {
-            body.velocity.x *= 0.82;
-            body.velocity.y *= 0.82;
-          }
-
-          // Gentle angular spin matching vortex direction
-          Body.setAngularVelocity(body, body.angularVelocity * 0.96 + (Math.random() - 0.5) * 0.02);
+          // Subtle organic vortex spin while traveling
+          Body.setAngularVelocity(body, body.angularVelocity * 0.94 + (Math.random() - 0.5) * 0.03);
         }
       }
     } else {
@@ -674,15 +679,23 @@ onUnmounted(() => {
     class="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
     aria-hidden="true"
   >
-    <!-- Visual Energy Aura / Shockwave Pulse Indicator -->
+    <!-- Visual Energy Singularity & Shockwave Blast Indicator -->
     <div
       v-if="shockwaveState.active"
-      class="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-teal-500/40 bg-teal-400/10 backdrop-blur-[1px] transition-all"
+      class="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-teal-400/50 bg-teal-400/15 backdrop-blur-[1px] transition-all"
       :class="[
         shockwaveState.exploding
-          ? 'scale-[4.5] opacity-0 duration-500 ease-out'
-          : 'w-16 h-16 animate-pulse opacity-80 duration-200',
+          ? 'w-20 h-20 scale-[5.5] border-teal-300/80 opacity-0 duration-500 ease-out'
+          : 'w-16 h-16 animate-ping opacity-70 duration-200',
       ]"
+      :style="{
+        left: `${shockwaveState.x}px`,
+        top: `${shockwaveState.y}px`,
+      }"
+    />
+    <div
+      v-if="shockwaveState.active && !shockwaveState.exploding"
+      class="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-teal-400 shadow-[0_0_12px_rgba(45,212,191,0.9)] opacity-90"
       :style="{
         left: `${shockwaveState.x}px`,
         top: `${shockwaveState.y}px`,
