@@ -403,7 +403,7 @@ const handlePointerUp = (e) => {
 const respawnToken = (body, token) => {
   const winW = typeof window !== 'undefined' ? window.innerWidth : 1200;
   const spawnX = Math.random() * (winW - 80) + 40;
-  const spawnY = -60 - Math.random() * 160;
+  const spawnY = -60 - Math.random() * 120;
   Body.setPosition(body, { x: spawnX, y: spawnY });
   // Brisk downward floating velocity
   Body.setVelocity(body, {
@@ -430,8 +430,8 @@ const initPhysics = () => {
   });
   world = engine.world;
 
-  // 2. Invisible boundary walls (Left, Right, Ceiling)
-  const wallThickness = 80;
+  // 2. Invisible impenetrable boundary walls (Left, Right, Ceiling)
+  const wallThickness = 160;
   leftWall = Bodies.rectangle(-wallThickness / 2, h / 2, wallThickness, h * 3, {
     isStatic: true,
     restitution: 0.85,
@@ -442,7 +442,7 @@ const initPhysics = () => {
     restitution: 0.85,
     friction: 0.05,
   });
-  ceiling = Bodies.rectangle(w / 2, -260, w * 3, wallThickness, {
+  ceiling = Bodies.rectangle(w / 2, -320, w * 3, wallThickness, {
     isStatic: true,
     restitution: 0.85,
     friction: 0.05,
@@ -543,10 +543,10 @@ const initPhysics = () => {
             y: body.position.y + (attractionPos.y + jitterY - body.position.y) * 0.65,
           });
 
-          // Impart mouse drag momentum so cluster moves with cursor when dragged
+          // Pure high-tension tremor velocity (eliminates the Mach-5 slingshot launch completely)
           Body.setVelocity(body, {
-            x: mouseVel.x * 0.35 + (Math.random() - 0.5) * 1.2,
-            y: mouseVel.y * 0.35 + (Math.random() - 0.5) * 1.2,
+            x: (Math.random() - 0.5) * 1.5,
+            y: (Math.random() - 0.5) * 1.5,
           });
 
           // High-frequency tremor spin
@@ -618,14 +618,34 @@ const initPhysics = () => {
     // Step physics engine
     Engine.update(engine, delta);
 
-    const floorLimit = window.innerHeight + 80;
+    const winW = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const winH = typeof window !== 'undefined' ? window.innerHeight : 800;
 
     for (let i = 0; i < bodies.length; i++) {
       const body = bodies[i];
       const token = rainTokens[i];
 
-      // Respawn when falling past bottom floor (only when not attracting)
-      if (!isAttracting && body.position.y > floorLimit) {
+      // Physical Speed Limiter: Prevents any body from exceeding safe speeds
+      const currentSpeed = Math.hypot(body.velocity.x, body.velocity.y);
+      const maxAllowedSpeed = 40;
+      if (currentSpeed > maxAllowedSpeed) {
+        const ratio = maxAllowedSpeed / currentSpeed;
+        Body.setVelocity(body, {
+          x: body.velocity.x * ratio,
+          y: body.velocity.y * ratio,
+        });
+      }
+
+      // Universal Out-of-Bounds Rescue Guard (guarantees zero icons ever get lost)
+      const isOutOfBounds =
+        !Number.isFinite(body.position.x) ||
+        !Number.isFinite(body.position.y) ||
+        body.position.x < -120 ||
+        body.position.x > winW + 120 ||
+        body.position.y < -380 ||
+        (!isAttracting && body.position.y > winH + 80);
+
+      if (isOutOfBounds) {
         respawnToken(body, token);
       }
 
@@ -658,11 +678,11 @@ const handleResize = () => {
   if (!world || typeof window === 'undefined') return;
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const wallThickness = 80;
+  const wallThickness = 160;
 
   if (leftWall) Body.setPosition(leftWall, { x: -wallThickness / 2, y: h / 2 });
   if (rightWall) Body.setPosition(rightWall, { x: w + wallThickness / 2, y: h / 2 });
-  if (ceiling) Body.setPosition(ceiling, { x: w / 2, y: -260 });
+  if (ceiling) Body.setPosition(ceiling, { x: w / 2, y: -320 });
 };
 
 onMounted(() => {
