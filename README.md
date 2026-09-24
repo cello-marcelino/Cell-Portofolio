@@ -60,6 +60,6 @@ npm run preview
 
 ## 🏷️ Version History
 
-- **v2.0.0** (`marcell-portofolio-vue`): Complete migration to Vue 3 SPA, interactive project slider, 70:20 balanced AI Integration pillar, standalone Tailwind v4, and full dead-code audit.
+- **v2.0.0** (`marcell-portofolio`): Complete migration to Vue 3 SPA, interactive project slider, 70:20 balanced AI Integration pillar, standalone Tailwind v4, and full dead-code audit.
 - **v1.0.0** (`main`): Initial Next.js & React portfolio iteration.
 
