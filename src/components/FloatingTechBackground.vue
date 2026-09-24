@@ -1,9 +1,17 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 
+// Safe base URL resolver for assets across dev & production
+const baseUrl = import.meta.env.BASE_URL || '/';
+const resolveIcon = (path) => {
+  const base = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${base}${cleanPath}`;
+};
+
 // Curated tech tokens for the rain animation
 // Logos are intentionally tilted at varied angles (not strictly upright) with organic drift
-const rainTokens = [
+const rawRainTokens = [
   // --- Left Flank Columns ---
   {
     name: 'Vue.js',
@@ -227,6 +235,12 @@ const rainTokens = [
   },
 ];
 
+// Resolve clean asset paths for all tokens
+const rainTokens = rawRainTokens.map((token) => ({
+  ...token,
+  icon: resolveIcon(token.icon),
+}));
+
 // Interactive Parallax Offset with subtle damping
 const mouseOffset = ref({ x: 0, y: 0 });
 let targetX = 0;
@@ -243,6 +257,12 @@ const updateParallax = () => {
 };
 
 onMounted(() => {
+  // Preload all rain token images immediately into browser cache
+  rainTokens.forEach((token) => {
+    const img = new Image();
+    img.src = token.icon;
+  });
+
   if (typeof window !== 'undefined') {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     animationFrameId = requestAnimationFrame(updateParallax);
@@ -283,7 +303,7 @@ onUnmounted(() => {
       >
         <!-- Tilted Badge: Intentionally not upright with organic tilt & soft shadow -->
         <div
-          class="p-2 sm:p-2.5 rounded-2xl bg-white/90 backdrop-blur-[2px] border border-slate-200/90 shadow-sm flex items-center justify-center transition-transform hover:scale-110"
+          class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/95 backdrop-blur-[2px] border border-slate-200/90 shadow-sm flex items-center justify-center p-2 transition-transform hover:scale-110"
           :style="{
             opacity: item.opacity,
             transform: `rotate(${item.tilt}deg) scale(${item.scale})`,
@@ -292,8 +312,11 @@ onUnmounted(() => {
           <img
             :src="item.icon"
             :alt="item.name"
-            class="w-6 h-6 sm:w-7 sm:h-7 object-contain select-none pointer-events-none"
-            loading="lazy"
+            width="28"
+            height="28"
+            class="w-full h-full object-contain block select-none pointer-events-none"
+            loading="eager"
+            decoding="async"
           />
         </div>
       </div>
